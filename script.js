@@ -17,11 +17,11 @@
         if ( canBeStopped ) {
             
             reset();
-            errorLog('Aborted Request');
+            errorLog(getLang('request-aborted'));
             return false;
         }
         
-        $orphanForm.find('input[type=submit]').val('Stop');
+        $orphanForm.find('input[type=submit]').val(getLang('stop'));
         event.stopPropagation();
         resetErrorLog();
         canBeStopped = true;
@@ -51,7 +51,7 @@
             var elements = isPage ? $currentResults.pages : $currentResults.media;
             if ( elements && elements.length ) {
                 var element = elements.pop();
-                status('Checking ' + (isPage?'page':'media') + ': ' + element);
+                status(getLang('checking-' + (isPage?'page':'media')) + element);
                 request({'do':'checkpage','id':element,'isPage':isPage}, validateElement);
             } else if ( isPage ) {
                 isPage = false;
@@ -69,7 +69,7 @@
      */
     var request = function(data, success) {
         data['ns']     = $orphanForm.find('input[name=ns]').val() || JSINFO['id'];
-        data['type']   = $orphanForm.find('input[name=type]').val() || 'both';
+        data['type']   = $orphanForm.find('select[name=type]').val() || 'both';
         data['call']   = 'multiorphan';
 
         throbber(true);
@@ -90,7 +90,7 @@
                 $result = jQuery.parseJSON(response);
             } catch( e ) {
                 throbber(false);
-                return errorLog( "Error parsing answer:\n" + response + "\n\n" + e );
+                return errorLog( getLang('error-parsing') + "\n" + response + "\n\n" + e );
             }
 
             delete response;
@@ -156,7 +156,11 @@
         delete $currentResults.pages;
         delete $currentResults.media;
         throbber(false);
-        $orphanForm.find('input[type=submit]').val('Start');
+        $orphanForm.find('input[type=submit]').val(getLang('start'));
+    };
+    
+    var getLang = function(key) {
+        return LANG.plugins.multiorphan ? LANG.plugins.multiorphan[key] : key;
     };
     
     jQuery(document).ready(init);

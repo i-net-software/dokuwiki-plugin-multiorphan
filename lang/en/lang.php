@@ -14,7 +14,7 @@ $lang['menu'] = 'multiORPHANS';
 $lang['startingNamespace'] = 'Enter your starting Namespace'; 
 
 $lang['startProcess'] = 'Start Process'; 
-$lang['start'] = 'start'; 
+$lang['start'] = 'Start'; 
 $lang['status'] = 'Status'; 
 $lang['ns'] = 'Set Namespace';
 
@@ -30,5 +30,12 @@ $lang['type.media'] = 'Media only';
 $lang['type.both'] = 'Pages and Media';
 
 
-$lang['js']['loadingpage'] = 'Loading';
+$lang['js']['request-aborted'] = 'Request aborted';
+$lang['js']['start'] = 'Start';
+$lang['js']['stop'] = 'Stop';
+
+$lang['js']['checking-page'] = 'Checking page: ';
+$lang['js']['checking-media'] = 'Checking media: ';
+
+$lang['js']['error-parsing'] = 'Error parsing answer:';
 //Setup VIM: ex: et ts=4 enc=utf-8 :
