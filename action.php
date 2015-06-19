@@ -19,7 +19,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
      */
     public function register(Doku_Event_Handler $controller) {
 
-       $controller->register_hook('AJAX_CALL_UNKNOWN', 'FIXME', $this, 'handle_ajax_call_unknown');
+       $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call_unknown');
    
     }
 
@@ -33,8 +33,75 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
      */
 
     public function handle_ajax_call_unknown(Doku_Event &$event, $param) {
+
+        global $INPUT, $conf;
+
+        if ( $event->data != 'multiorphan' ) return false;
+        if ((!$helper = $this->loadHelper('multiorphan'))) return false;
+        $event->preventDefault();
+        
+        $namespace = $INPUT->str('ns');
+        $ns_dir  = utf8_encodeFN(str_replace(':','/',$namespace));
+    
+        switch( $INPUT->str('do') ) {
+            
+            case 'loadpages': {
+                
+                $type = $INPUT->str('type');
+                
+                if ( $type == 'both' || $type == 'pages') {
+                    $pages = array();
+                    search($pages,$conf['datadir'],'search_allpages',array('ns' => $ns_dir));
+                    array_walk($pages, array($this, '__map_ids'));
+                }
+        
+                if ( $type == 'both' || $type == 'media') {
+                    $media = array();
+                    search($media,$conf['mediadir'],'search_media',array('ns' => $ns_dir));
+                    array_walk($media, array($this, '__map_ids'));
+                }
+                
+                print json_encode(array(
+                    'pages' => $pages, 
+                    'media' => $media
+                ));
+                
+                break;
+            }
+            
+            case 'checkpage': {
+                
+                $id = $INPUT->str('id');
+                $isPage = $INPUT->has('isPage');
+                $result = $isPage ? $this->__check_pages($id) : $this->__check_media($id);
+                print json_encode($result);
+                break;
+            }
+            
+            default: {
+                print json_encode(array(
+                   'error' => 'I do not know what to do.'
+                ));
+                break;
+            }
+        }
+    
+    }
+    
+    /**
+     * Remove not needed information from search
+     */
+    private function __map_ids(&$element) {
+        $element = $element['id'];
+    }
+    
+    private function __check_pages($id) {
+        
     }
 
+    private function __check_media($id) {
+        
+    }
 }
 
 // vim:ts=4:sw=4:et:
