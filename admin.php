@@ -34,8 +34,8 @@ class admin_plugin_multiorphan extends DokuWiki_Admin_Plugin {
      */
     public function html() {
 
-        if ( ! $functions=& plugin_load('helper', 'multiorphan') ) {
-            msg("Can't initialize");
+        if ( ! $functions = $this->loadHelper('multiorphan') ) {
+            msg("Can't initialize the multiorphan plugin");
             return false;
         }
         

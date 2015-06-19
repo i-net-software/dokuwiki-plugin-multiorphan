@@ -18,12 +18,17 @@ $lang['start'] = 'start';
 $lang['status'] = 'Status'; 
 $lang['ns'] = 'Set Namespace';
 
+$lang['depth'] = 'Depth';
 $lang['depthType'] = 'Export Type';
 $lang['depth.pageOnly'] = 'this page only';
 $lang['depth.allSubNameSpaces'] = 'all sub namespaces';
 $lang['depth.specifiedDepth'] = 'specified depth';
 
-$lang['depth'] = 'Depth';
+$lang['type'] = 'What to check';
+$lang['type.pages'] = 'Pages only';
+$lang['type.media'] = 'Media only';
+$lang['type.both'] = 'Pages and Media';
+
 
 $lang['js']['loadingpage'] = 'Loading';
 //Setup VIM: ex: et ts=4 enc=utf-8 :

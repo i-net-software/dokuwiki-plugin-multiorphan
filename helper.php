@@ -49,6 +49,9 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->addElement(form_makeTextField('ns', getNS($ID), $this->getLang('ns') . ':', 'ns'));
 
         $form->addElement(form_makeTag('br'));
+        $form->addElement(form_makeListboxField('type', array( "pages" => $this->getLang('type.pages'), "media" => $this->getLang('type.media'), "both" => $this->getLang('type.pagesAndMedia') ), (empty($_REQUEST['type']) ? $this->getLang('type.both') : $_REQUEST['depthType']), $this->getLang('type') . ':', 'type', null, array_merge(array('class' => 'edit'))));
+
+        $form->addElement(form_makeTag('br'));
         $form->addElement(form_makeListboxField('depthType', array( "0" => $this->getLang('depth.pageOnly'), "1" => $this->getLang('depth.allSubNameSpaces'), "2" => $this->getLang('depth.specifiedDepth') ), (empty($_REQUEST['depthType']) ? $this->getLang('depth.allSubNameSpaces') : $_REQUEST['depthType']), $this->getLang('depthType') . ':', 'depthType', null, array_merge(array('class' => 'edit'))));
 
         $form->addElement(form_makeTag('br'));
