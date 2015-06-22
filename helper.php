@@ -83,24 +83,24 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
     private function __makeForm(&$form, $type) {
         
         $form->startFieldset( $this->getLang($type.'-result') );
-        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type)));
+        $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result_group '.$type)));
 
-        $form->addElement(form_makeOpenTag('h3'));
+        $form->addElement(form_makeOpenTag('h3', array('class' => 'header')));
         $form->addElement( $this->getLang('wanted') );
         $form->addElement(form_makeCloseTag('h3'));
-        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type.'_wanted')));
+        $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result wanted')));
         $form->addElement(form_makeCloseTag('div'));
 
-        $form->addElement(form_makeOpenTag('h3'));
+        $form->addElement(form_makeOpenTag('h3', array('class' => 'header')));
         $form->addElement( $this->getLang('orphan') );
         $form->addElement(form_makeCloseTag('h3'));
-        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type.'_orphan')));
+        $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result orphan')));
         $form->addElement(form_makeCloseTag('div'));
 
-        $form->addElement(form_makeOpenTag('h3'));
+        $form->addElement(form_makeOpenTag('h3', array('class' => 'header')));
         $form->addElement( $this->getLang('linked') );
         $form->addElement(form_makeCloseTag('h3'));
-        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type.'_linked')));
+        $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result linked')));
         $form->addElement(form_makeCloseTag('div'));
 
         $form->addElement(form_makeCloseTag('div'));
