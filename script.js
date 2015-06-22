@@ -102,7 +102,11 @@
                 status(getLang('checking-page') + element);
                 request({'do':'checkpage','id':element}, function(response) {
                     checkResponseForWantedAndLinked(response, element);
-                    findOrphans();
+
+                    // Every 10 pages
+                    if ( elements && elements.length && elements.length % 10 == 0 ) {
+                        findOrphans();
+                    }
                 }).always(validateElement);
             } else {
                 
