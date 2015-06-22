@@ -47,17 +47,17 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             
             case 'loadpages': {
                 
-                $type = $INPUT->str('type');
+                $type = 'both'; //$INPUT->str('type');
                 
                 if ( $type == 'both' || $type == 'pages') {
                     $pages = array();
-                    search($pages,$conf['datadir'],'search_allpages',array('ns' => $ns_dir));
+                    search($pages,$conf['datadir'],'search_allpages',array(),$ns_dir);
                     array_walk($pages, array($this, '__map_ids'));
                 }
         
                 if ( $type == 'both' || $type == 'media') {
                     $media = array();
-                    search($media,$conf['mediadir'],'search_media',array('ns' => $ns_dir));
+                    search($media,$conf['mediadir'],'search_media',array(),$ns_dir);
                     array_walk($media, array($this, '__map_ids'));
                 }
                 
@@ -72,8 +72,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             case 'checkpage': {
                 
                 $id = $INPUT->str('id');
-                $isPage = $INPUT->has('isPage');
-                $result = $isPage ? $this->__check_pages($id) : $this->__check_media($id);
+                $result = $this->__check_pages($id);
                 print json_encode($result);
                 break;
             }
@@ -96,10 +95,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
     }
     
     private function __check_pages($id) {
-        
-    }
-
-    private function __check_media($id) {
         
     }
 }

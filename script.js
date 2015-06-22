@@ -29,7 +29,7 @@
 
             // Start cycling pages
             $currentResults = $result;
-            checkpagesandmedia();
+            checkpagesandmedia($result.pages);
         });
         
         return false;
@@ -38,25 +38,18 @@
     /**
      * Walk the current elements Tree
      */
-    var checkpagesandmedia = function() {
-        
-        var isPage = true;
+    var checkpagesandmedia = function(elements) {
+
+        // Cycle pages. Media is implicite.
         var validateElement = function(result) {
             
-            if ( result ) {
-                console.log(result);
-            }
-            
-            // A way out of endles execution;
-            var elements = isPage ? $currentResults.pages : $currentResults.media;
-            if ( elements && elements.length ) {
+            // Check if we still have elements in the elements list (cycle-list) and in the resultList (could be stopped.)
+            if ( elements && elements.length && $currentResults && $currentResults.pages && $currentResults.pages.length ) {
                 var element = elements.pop();
-                status(getLang('checking-' + (isPage?'page':'media')) + element);
-                request({'do':'checkpage','id':element,'isPage':isPage}, validateElement);
-            } else if ( isPage ) {
-                isPage = false;
-                validateElement();
+                status(getLang('checking-page') + element);
+                request({'do':'checkpage','id':element}, validateElement);
             } else {
+                status(getLang('checking-done'));
                 reset();
             }
         };
@@ -68,8 +61,8 @@
      * Send a request to the plugin.
      */
     var request = function(data, success) {
-        data['ns']     = $orphanForm.find('input[name=ns]').val() || JSINFO['id'];
-        data['type']   = $orphanForm.find('select[name=type]').val() || 'both';
+        data['ns']     = $orphanForm.find('input[name=ns]').val();
+        // data['type']   = $orphanForm.find('select[name=type]').val() || 'both';
         data['call']   = 'multiorphan';
 
         throbber(true);

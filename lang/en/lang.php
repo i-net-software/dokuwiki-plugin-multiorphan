@@ -34,6 +34,7 @@ $lang['js']['request-aborted'] = 'Request aborted';
 $lang['js']['start'] = 'Start';
 $lang['js']['stop'] = 'Stop';
 
+$lang['js']['checking-done'] = 'Done checking the pages';
 $lang['js']['checking-page'] = 'Checking page: ';
 $lang['js']['checking-media'] = 'Checking media: ';
 
