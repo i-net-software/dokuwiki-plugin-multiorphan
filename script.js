@@ -2,10 +2,11 @@
 // multiorphan Admin Plugin Script
 (function(){
 
-    var canBeStopped = false, $orphanForm = null, $currentResults;
+    var canBeStopped = false, $orphanForm = null, $currentPagesAndMedia, $currentResults;
 
     var init = function() {
         $orphanForm = jQuery('form#multiorphan').submit(loadpages);
+        reset();
     };
     
     /**
@@ -28,8 +29,8 @@
         request({'do':'loadpages'}, function( $result ){
 
             // Start cycling pages
-            $currentResults = $result;
-            checkpagesandmedia($result.pages);
+            $currentPagesAndMedia = $result;
+            checkpagesandmedia(jQuery.makeArray($result.pages));
         });
         
         return false;
@@ -44,17 +45,77 @@
         var validateElement = function(result) {
             
             // Check if we still have elements in the elements list (cycle-list) and in the resultList (could be stopped.)
-            if ( elements && elements.length && $currentResults && $currentResults.pages && $currentResults.pages.length ) {
+            if ( elements && elements.length && $currentPagesAndMedia && $currentPagesAndMedia.pages && $currentPagesAndMedia.pages.length ) {
                 var element = elements.pop();
                 status(getLang('checking-page') + element);
-                request({'do':'checkpage','id':element}, validateElement);
+                request({'do':'checkpage','id':element}, function(response) {
+                    checkResponseForOrphans(response, element);
+                }).always(validateElement);
             } else {
+                
+                // All done. Check for Orphans.                
+                findOrphans();
+                console.log($currentResults);
+                
+                
+                // Now we can leave.
                 status(getLang('checking-done'));
                 reset();
             }
         };
         
         validateElement();
+    };
+    
+    /**
+     * Build up the structure for linked and wanted pages
+     */
+    var checkResponseForOrphans = function(response, requestPage) {
+        
+        // Fill the $currentResults object with information.
+        var checkResponse = function( id, amount, object ) {
+
+            var checkPoint = amount == 0 ? object.wanted : object.linked;
+            if ( !Array.isArray(checkPoint[id]) ) {
+                checkPoint[id] = [];
+            }
+            
+            if ( checkPoint[id].indexOf(requestPage) == -1 ) {
+                checkPoint[id].push(requestPage);
+            }
+        }
+      
+        jQuery.each((response||{}).pages||[], function(page, amount){
+            checkResponse(page, amount, $currentResults.pages);
+        });
+      
+        jQuery.each((response||{}).media||[], function(media, amount){
+            checkResponse(media, amount, $currentResults.media);
+        });
+    };
+    
+    /**
+     * walk all linked pages and remove them from the ones that actually exist in the wiki
+     * assign the result to the array.
+     */
+    var findOrphans = function() {
+
+        // Sort out all not 
+        var orphaned = function(linked, orphaned) {
+            
+            if ( !orphaned || !orphaned.length ) return [];
+            
+            jQuery.each(linked, function(link) {
+                if ( (idx = orphaned.indexOf(link)) > -1 ) {
+                    orphaned.splice(idx, 1);
+                }
+            });
+            
+            return orphaned;
+        };
+
+        $currentResults.pages.orphan = orphaned($currentResults.pages.linked, $currentPagesAndMedia.pages);
+        $currentResults.media.orphan = orphaned($currentResults.media.linked, $currentPagesAndMedia.media);
     };
 
     /**
@@ -66,7 +127,7 @@
         data['call']   = 'multiorphan';
 
         throbber(true);
-        jQuery.post(DOKU_BASE + 'lib/exe/ajax.php', data, handleResponse(success)).always(function(){
+        return jQuery.post(DOKU_BASE + 'lib/exe/ajax.php', data, handleResponse(success)).always(function(){
             throbber(false);
         });
     };
@@ -146,8 +207,25 @@
     
     var reset = function() {
         canBeStopped = false;
-        delete $currentResults.pages;
-        delete $currentResults.media;
+        
+        // Result Object
+        $currentResults = {
+            
+            pages: {
+                linked: {},
+                wanted: {},
+                orphan: []
+            },
+            media: {
+                linked: {},
+                wanted: {},
+                orphan: []
+            }
+        };
+
+        // All pages and Media from DW
+        $currentPagesAndMedia = {};
+
         throbber(false);
         $orphanForm.find('input[type=submit]').val(getLang('start'));
     };
