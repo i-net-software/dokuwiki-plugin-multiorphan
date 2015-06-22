@@ -67,16 +67,44 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->endFieldset();
 
         $form->startFieldset( $this->getLang('status') );
-        $form->addElement(form_makeOpenTag('span', array('id' => 'multiorphan__out')));
-
-        $form->addElement(form_makeCloseTag('span'));
+        $form->addElement(form_makeTag('span', array('id' => 'multiorphan__out')));
         $form->addElement(form_makeOpenTag('span', array('class' => 'multiorphan__throbber')));
         $form->addElement(form_makeTag('img', array('src' => DOKU_BASE.'lib/images/loading.gif', 'id' => 'multiorphan__throbber')));
         $form->addElement(form_makeCloseTag('span'));
         $form->endFieldset();
 
+        $this->__makeForm($form, 'pages');
+        $this->__makeForm($form, 'media');
+
         $form->printForm();
 
+    }
+
+    private function __makeForm(&$form, $type) {
+        
+        $form->startFieldset( $this->getLang($type.'-result') );
+        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type)));
+
+        $form->addElement(form_makeOpenTag('h3'));
+        $form->addElement( $this->getLang('wanted') );
+        $form->addElement(form_makeCloseTag('h3'));
+        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type.'_wanted')));
+        $form->addElement(form_makeCloseTag('div'));
+
+        $form->addElement(form_makeOpenTag('h3'));
+        $form->addElement( $this->getLang('orphan') );
+        $form->addElement(form_makeCloseTag('h3'));
+        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type.'_orphan')));
+        $form->addElement(form_makeCloseTag('div'));
+
+        $form->addElement(form_makeOpenTag('h3'));
+        $form->addElement( $this->getLang('linked') );
+        $form->addElement(form_makeCloseTag('h3'));
+        $form->addElement(form_makeOpenTag('div', array('id' => 'multiorphan__result_'.$type.'_linked')));
+        $form->addElement(form_makeCloseTag('div'));
+
+        $form->addElement(form_makeCloseTag('div'));
+        $form->endFieldset();
     }
 }
 

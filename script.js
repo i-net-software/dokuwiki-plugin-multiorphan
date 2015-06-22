@@ -5,6 +5,7 @@
     var canBeStopped = false, $orphanForm = null, $currentPagesAndMedia, $currentResults;
 
     var init = function() {
+        jQuery( "#multiorphan__result_pages,#multiorphan__result_media" ).accordion();
         $orphanForm = jQuery('form#multiorphan').submit(loadpages);
         reset();
     };
@@ -55,8 +56,7 @@
                 
                 // All done. Check for Orphans.                
                 findOrphans();
-                console.log($currentResults);
-                
+                updateGUI();
                 
                 // Now we can leave.
                 status(getLang('checking-done'));
@@ -116,6 +116,12 @@
 
         $currentResults.pages.orphan = orphaned($currentResults.pages.linked, $currentPagesAndMedia.pages);
         $currentResults.media.orphan = orphaned($currentResults.media.linked, $currentPagesAndMedia.media);
+    };
+
+    var updateGUI = function() {
+
+        
+
     };
 
     /**

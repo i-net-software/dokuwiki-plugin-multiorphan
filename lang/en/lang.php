@@ -29,6 +29,13 @@ $lang['type.pages'] = 'Pages only';
 $lang['type.media'] = 'Media only';
 $lang['type.both'] = 'Pages and Media';
 
+$lang['pages-result'] = 'Result of PAGES check';
+$lang['media-result'] = 'Result of MEDIA check';
+$lang['wanted'] = 'Wanted';
+$lang['orphan'] = 'Orphaned';
+$lang['linked'] = 'Linked';
+
+
 
 $lang['js']['request-aborted'] = 'Request aborted';
 $lang['js']['start'] = 'Start';
@@ -39,4 +46,5 @@ $lang['js']['checking-page'] = 'Checking page: ';
 $lang['js']['checking-media'] = 'Checking media: ';
 
 $lang['js']['error-parsing'] = 'Error parsing answer:';
+
 //Setup VIM: ex: et ts=4 enc=utf-8 :
