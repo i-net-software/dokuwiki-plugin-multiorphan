@@ -54,7 +54,7 @@
                 var element = elements.pop();
                 status(getLang('checking-page') + element);
                 request({'do':'checkpage','id':element}, function(response) {
-                    checkResponseForOrphans(response, element);
+                    checkResponseForWantedAndLinked(response, element);
                 }).always(validateElement);
             } else {
                 
@@ -92,7 +92,7 @@
     /**
      * Build up the structure for linked and wanted pages
      */
-    var checkResponseForOrphans = function(response, requestPage) {
+    var checkResponseForWantedAndLinked = function(response, requestPage) {
         
         // Fill the $currentResults object with information.
         var checkResponse = function( id, amount, object, $output ) {
