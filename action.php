@@ -94,8 +94,48 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $element = $element['id'];
     }
     
+    /**
+     * Checks a page for the contained links and media.
+     * Returns an array: page|media => array of ids with count
+     */
     private function __check_pages($id) {
         
+        global $conf;
+        
+        $file         = wikiFN($id);
+        $instructions = p_get_instructions(file_get_contents($file));
+        $links        = array(
+            
+            
+            
+        );
+        $cns          = getNS($id);
+        $exists       = false;
+        foreach($instructions as $ins) {
+            
+            switch( $ins[0] ) {
+                case 'internallink'  : 
+                case 'camelcaselink' : {
+
+                    $mid = $ins[1][0];
+                    list($mid) = explode('#', $mid); //record pages without hashs
+                    resolve_pageid($cns, $mid, $exists);
+                    $links['page'][$mid] += $exists ? 1 : 0;
+                    break;
+                }
+                
+                case 'internalmedia' : {
+
+                    $mid = $ins[1][0];
+                    list($mid) = explode('#', $mid); //record pages without hashs
+                    resolve_mediaid($cns, $mid, $exists);
+                    $links['media'][$mid] += $exists ? 1 : 0;
+                    break;
+                }
+                
+            }
+        }
+        return $links;
     }
 }
 
