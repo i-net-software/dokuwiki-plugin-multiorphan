@@ -170,7 +170,7 @@
             }
             
             addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), id, requestPage, actions);
-        }
+        };
       
         var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
         var $mediaOut = $orphanForm.find('.multiorphan__result_group.media');
