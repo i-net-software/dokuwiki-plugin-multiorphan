@@ -72,14 +72,32 @@
     };
     
     /**
+     * Add an entry to the accordion of the according type.
+     */
+    var addGUIEntry = function($insertPoint, id, requestPage) {
+
+        var $header = $insertPoint.prev('.header');
+        $header.attr('count', parseInt($header.attr('count')||0)+1);
+        
+        var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"]');
+        if ( !$appendTo.length ) {
+            
+            var $wrapper = jQuery('<div/>').text(id).appendTo($insertPoint);
+            $appendTo = jQuery('<ul/>').addClass('entry').attr('elementid', id).appendTo($wrapper);
+        }
+        
+        jQuery('<li/>').addClass('requestPage').text(requestPage).appendTo($appendTo);
+    };
+    
+    /**
      * Build up the structure for linked and wanted pages
      */
     var checkResponseForOrphans = function(response, requestPage) {
         
         // Fill the $currentResults object with information.
-        var checkResponse = function( id, amount, object ) {
+        var checkResponse = function( id, amount, object, $output ) {
 
-            var checkPoint = amount == 0 ? object.wanted : object.linked;
+            var checkPoint  = amount == 0 ? object.wanted : object.linked;
             if ( !Array.isArray(checkPoint[id]) ) {
                 checkPoint[id] = [];
             }
@@ -87,14 +105,18 @@
             if ( checkPoint[id].indexOf(requestPage) == -1 ) {
                 checkPoint[id].push(requestPage);
             }
+            
+            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), id, requestPage);
         }
       
+        var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
+        var $mediaOut = $orphanForm.find('.multiorphan__result_group.media');
         jQuery.each((response||{}).pages||[], function(page, amount){
-            checkResponse(page, amount, $currentResults.pages);
+            checkResponse(page, amount, $currentResults.pages, $pagesOut);
         });
       
         jQuery.each((response||{}).media||[], function(media, amount){
-            checkResponse(media, amount, $currentResults.media);
+            checkResponse(media, amount, $currentResults.media, $mediaOut);
         });
     };
     
