@@ -27,10 +27,10 @@
             return false;
         }
         
-        $orphanForm.find('input[type=submit]').val(getLang('stop'));
-        event.stopPropagation();
-        canBeStopped = true;
         reset(true);
+        canBeStopped = true;
+        event.stopPropagation();
+        $orphanForm.find('input[type=submit]').val(getLang('stop'));
         request({'do':'loadpages'}, function( $result ){
 
             // Start cycling pages
