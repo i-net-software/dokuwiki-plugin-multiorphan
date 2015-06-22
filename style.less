@@ -64,6 +64,39 @@
             &:hover {
                 background-color: fade(@ini_existing, 10%);
             }
+            
+            &.deleted, &.deleted:hover {
+                background-color: fade(@ini_missing, 10%);
+            }
+
+            &.deleted:nth-child(even), &.deleted:nth-child(even):hover {
+                background-color: fade(@ini_missing, 20%);
+            }
+        }
+        
+        div.actions {
+            float: right;
+            
+            a {
+                padding: 0px 5px;
+            }
+        }
+            
+        li {
+                
+            position: relative;
+            
+            div.actions:hover:before {
+                content: '';
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                
+                background: fade(@ini_existing, 10%);
+                pointer-events: none;
+            }
         }
     }
 }
@@ -99,6 +132,17 @@
 #dokuwiki__pagetools ul li a.multiorphan_addpage:active,
 #dokuwiki__pagetools ul li a.multiorphan_addpage:focus {
 	background-position: right -32px;
+}
+
+#multiorphan__preview_dialog {
+    
+    ul.tabs, ul.actions {
+        display: none;
+    }
+    
+    div.panelHeader, div.panelContent {
+        float: left;
+    }
 }
 
 // Setup VIM: ex: et ts=4 enc=utf-8 :

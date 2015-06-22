@@ -34,14 +34,16 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
     public function handle_ajax_call_unknown(Doku_Event &$event, $param) {
 
-        global $INPUT, $conf;
+        global $INPUT, $conf, $AUTH;
 
         if ( $event->data != 'multiorphan' ) return false;
         if ((!$helper = $this->loadHelper('multiorphan'))) return false;
+        if ( !checkSecurityToken() ) return false;
         $event->preventDefault();
         
         $namespace = $INPUT->str('ns');
         $ns_dir  = utf8_encodeFN(str_replace(':','/',$namespace));
+        $result  = array();
     
         switch( $INPUT->str('do') ) {
             
@@ -61,10 +63,10 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     array_walk($media, array($this, '__map_ids'));
                 }
                 
-                print json_encode(array(
+                $result = array(
                     'pages' => $pages, 
                     'media' => $media
-                ));
+                );
                 
                 break;
             }
@@ -73,17 +75,50 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 
                 $id = $INPUT->str('id');
                 $result = $this->__check_pages($id);
-                print json_encode($result);
+                break;
+            }
+            
+            case 'viewPage' : {
+                
+                $link = $INPUT->str('link');
+                $result = array('link' => wl($link));
+                break;
+            }
+            
+            case 'deletePage' : {
+                
+                $link = $INPUT->str('link');
+                saveWikiText($link, '', "Remove page via multiORPHANS");
+                break;
+            }
+
+            case 'viewMedia' : {
+                
+                $link = $INPUT->str('link');
+                ob_start();
+                tpl_mediaFileDetails($link, null);
+                $result = array( 'dialogContent' => ob_get_contents());
+                ob_end_clean();
+                
+                break;
+            }
+            
+            case 'deleteMedia' : {
+                
+                $link = $INPUT->str('link');
+                $status = media_delete($link,$AUTH);
                 break;
             }
             
             default: {
-                print json_encode(array(
+                $result = array(
                    'error' => 'I do not know what to do.'
-                ));
+                );
                 break;
             }
         }
+        
+        print json_encode($result);
     
     }
     
