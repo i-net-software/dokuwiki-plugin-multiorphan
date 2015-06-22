@@ -120,7 +120,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     $mid = $ins[1][0];
                     list($mid) = explode('#', $mid); //record pages without hashs
                     resolve_pageid($cns, $mid, $exists);
-                    $links['page'][$mid] += $exists ? 1 : 0;
+                    $links['pages'][$mid] += $exists ? 1 : 0;
                     break;
                 }
                 
