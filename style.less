@@ -47,6 +47,25 @@
         content: attr(count);
         float: right;
     }
+    
+    .multiorphan__result {
+        
+        padding: 0px;
+        border-bottom: 1px solid @ini_border;
+        
+        > div {
+            padding: 0.5em 1em;
+            background-color: #fefefe;
+                    
+            &:nth-child(even) {
+                background-color: #efefef;
+            }
+            
+            &:hover {
+                background-color: fade(@ini_existing, 10%);
+            }
+        }
+    }
 }
 
 #multiorphan__errorlog {

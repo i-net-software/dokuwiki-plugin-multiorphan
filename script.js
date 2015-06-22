@@ -60,7 +60,6 @@
                 
                 // All done. Check for Orphans.                
                 findOrphans();
-                updateGUI();
                 
                 // Now we can leave.
                 status(getLang('checking-done'));
@@ -79,14 +78,16 @@
         var $header = $insertPoint.prev('.header');
         $header.attr('count', parseInt($header.attr('count')||0)+1);
         
-        var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"]');
+        var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"] > ul');
         if ( !$appendTo.length ) {
             
-            var $wrapper = jQuery('<div/>').text(id).appendTo($insertPoint);
-            $appendTo = jQuery('<ul/>').addClass('entry').attr('elementid', id).appendTo($wrapper);
+            var $wrapper = jQuery('<div/>').text(id).addClass('entry').attr('elementid', id).appendTo($insertPoint);
+            $appendTo = jQuery('<ul/>').appendTo($wrapper);
         }
         
-        jQuery('<li/>').addClass('requestPage').text(requestPage).appendTo($appendTo);
+        if ( requestPage && requestPage.length ) {
+            jQuery('<li/>').addClass('requestPage').text(requestPage).appendTo($appendTo);
+        }
     };
     
     /**
@@ -140,14 +141,17 @@
             return orphaned;
         };
 
+        var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
         $currentResults.pages.orphan = orphaned($currentResults.pages.linked, $currentPagesAndMedia.pages);
-        $currentResults.media.orphan = orphaned($currentResults.media.linked, $currentPagesAndMedia.media);
-    };
-
-    var updateGUI = function() {
-
+        jQuery.each($currentResults.pages.orphan, function(idx, orphan){
+            addGUIEntry($pagesOut.find('.multiorphan__result.orphan'), orphan);
+        });        
         
-
+        var $mediaOut = $orphanForm.find('.multiorphan__result_group.media');
+        $currentResults.media.orphan = orphaned($currentResults.media.linked, $currentPagesAndMedia.media);
+        jQuery.each($currentResults.media.orphan, function(idx, orphan){
+            addGUIEntry($mediaOut.find('.multiorphan__result.orphan'), orphan);
+        });        
     };
 
     /**
