@@ -5,8 +5,12 @@
     var canBeStopped = false, $orphanForm = null, $currentPagesAndMedia, $currentResults;
 
     var init = function() {
-        jQuery( "#multiorphan__result_pages,#multiorphan__result_media" ).accordion();
         $orphanForm = jQuery('form#multiorphan').submit(loadpages);
+        $orphanForm.find( ".multiorphan__result_group" ).accordion({
+            collapsible: true,
+            active: false,
+            heightStyle: "content"
+        });
         reset();
     };
     
@@ -25,8 +29,8 @@
         
         $orphanForm.find('input[type=submit]').val(getLang('stop'));
         event.stopPropagation();
-        resetErrorLog();
         canBeStopped = true;
+        reset(true);
         request({'do':'loadpages'}, function( $result ){
 
             // Start cycling pages
@@ -211,7 +215,7 @@
         jQuery('#multiorphan__throbber').css('visibility', throbberCount>0 ? 'visible' : 'hidden');
     };
     
-    var reset = function() {
+    var reset = function(fullReset) {
         canBeStopped = false;
         
         // Result Object
@@ -234,6 +238,12 @@
 
         throbber(false);
         $orphanForm.find('input[type=submit]').val(getLang('start'));
+        
+        if ( fullReset === true ) {
+            resetErrorLog();
+            $orphanForm.find('.multiorphan__result_group .header').attr('count', null);
+            $orphanForm.find('.multiorphan__result_group .multiorphan__result').html();
+        }
     };
     
     var getLang = function(key) {
