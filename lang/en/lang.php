@@ -42,8 +42,8 @@ $lang['js']['start'] = 'Start';
 $lang['js']['stop'] = 'Stop';
 
 $lang['js']['checking-done'] = 'Done checking the pages';
-$lang['js']['checking-page'] = 'Checking page: ';
-$lang['js']['checking-media'] = 'Checking media: ';
+$lang['js']['checking-page'] = 'Checking page';
+$lang['js']['checking-orphans'] = 'Checking for orphans.';
 
 $lang['js']['error-parsing'] = 'Error parsing answer:';
 

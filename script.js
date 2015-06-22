@@ -82,6 +82,7 @@
 
             // Start cycling pages
             $currentPagesAndMedia = $result;
+            $currentPagesAndMedia.interval = Math.floor($currentPagesAndMedia.pages.length / 100);
             checkpagesandmedia(jQuery.makeArray($result.pages));
         });
         
@@ -99,12 +100,12 @@
             // Check if we still have elements in the elements list (cycle-list) and in the resultList (could be stopped.)
             if ( elements && elements.length && $currentPagesAndMedia && $currentPagesAndMedia.pages && $currentPagesAndMedia.pages.length ) {
                 var element = elements.pop();
-                status(getLang('checking-page') + element);
+                status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+"): " + element);
                 request({'do':'checkpage','id':element}, function(response) {
                     checkResponseForWantedAndLinked(response, element);
 
                     // Every 10 pages
-                    if ( elements && elements.length && elements.length % 10 == 0 ) {
+                    if ( elements && elements.length && elements.length % $currentPagesAndMedia.interval == 0 ) {
                         findOrphans();
                     }
                 }).always(validateElement);
@@ -207,6 +208,7 @@
             return orphaned;
         };
 
+        status(getLang('checking-orphans'));
         $orphanForm.find('.multiorphan__result_group .orphan.header').attr('count', null);
         $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').html('');
         
