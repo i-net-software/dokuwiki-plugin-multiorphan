@@ -78,13 +78,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 break;
             }
             
-            case 'viewPage' : {
-                
-                $link = $INPUT->str('link');
-                $result = array('link' => wl($link));
-                break;
-            }
-            
             case 'deletePage' : {
                 
                 $link = $INPUT->str('link');
@@ -100,6 +93,14 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 $result = array( 'dialogContent' => ob_get_contents());
                 ob_end_clean();
                 
+                // If there is no content, this could be a link only
+                if ( !empty( $result['dialogContent'] ) ) break;
+            }
+            
+            case 'viewPage' : {
+                
+                $link = $INPUT->str('link');
+                $result = array('link' => wl($link));
                 break;
             }
             
