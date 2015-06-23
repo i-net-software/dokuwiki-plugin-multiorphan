@@ -82,13 +82,24 @@
 
             // Start cycling pages
             $currentPagesAndMedia = $result;
-            $currentPagesAndMedia.interval = Math.floor($currentPagesAndMedia.pages.length / 10);
+            $currentPagesAndMedia.interval = 1;//Math.floor($currentPagesAndMedia.pages.length / 10);
             checkpagesandmedia(jQuery.makeArray($result.pages));
         });
         
         return false;
     };
     
+    /**
+     * Time Check while running
+     */
+    var prevTime = 0;
+    var getTimeDifference = function(){
+        var newTime = Date.now();
+        var time = (newTime - (prevTime||newTime)) / 1000;
+        prevTime = newTime;
+        return time + "s";
+    };
+
     /**
      * Walk the current elements Tree
      */
@@ -100,14 +111,15 @@
             // Check if we still have elements in the elements list (cycle-list) and in the resultList (could be stopped.)
             if ( elements && elements.length && !($currentPagesAndMedia && $currentPagesAndMedia.stop) ) {
                 var element = elements.pop();
-                status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+"): " + element);
+                
+                status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+" " + getTimeDifference() + "): " + element);
                 request({'do':'checkpage','id':element}, function(response) {
                     checkResponseForWantedAndLinked(response, element);
 
                     // Every 10 pages
-                    if ( elements && elements.length && elements.length % $currentPagesAndMedia.interval == 0 ) {
+                    //if ( elements && elements.length && elements.length % $currentPagesAndMedia.interval == 0 ) {
                         findOrphans();
-                    }
+                    //}
                 }).always(validateElement);
             } else {
                 
