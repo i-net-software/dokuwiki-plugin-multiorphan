@@ -195,9 +195,10 @@
     var findOrphans = function(processCompleted) {
 
         // Sort out all not 
-        var orphaned = function(linked, orphaned) {
+        var orphaned = function(linked, original) {
             
-            if ( !orphaned || !orphaned.length ) return [];
+            if ( !original || !original.length ) return [];
+            var orphaned = jQuery.makeArray(original); // make copy
             
             jQuery.each(linked, function(link) {
                 if ( (idx = orphaned.indexOf(link)) > -1 ) {
