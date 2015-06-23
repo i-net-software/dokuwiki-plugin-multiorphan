@@ -18,6 +18,7 @@ $lang['start'] = 'Start';
 $lang['status'] = 'Status'; 
 $lang['ns'] = 'Set Namespace';
 $lang['idFilter'] = 'RegEx to filter full ID';
+$lang['purge'] = 'Purge cache for checked ID';
 
 $lang['depth'] = 'Depth';
 $lang['depthType'] = 'Export Type';
@@ -35,8 +36,6 @@ $lang['media-result'] = 'Result of MEDIA check';
 $lang['wanted'] = 'Wanted';
 $lang['orphan'] = 'Orphaned';
 $lang['linked'] = 'Linked';
-
-
 
 $lang['js']['request-aborted'] = 'Request aborted';
 $lang['js']['start'] = 'Start';

@@ -51,6 +51,9 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         
         $form->addElement(form_makeTextField('filter', '', $this->getLang('idFilter') . ':', 'filter'));
         $form->addElement('<br/>');
+
+        $form->addElement(form_makeCheckboxField('purge', 1, $this->getLang('purge') . ':', 'purge'));
+        $form->addElement(form_makeTag('br'));
         
         $form->addElement(form_makeButton('submit', 'multiorphan', $this->getLang('start') , array('style' => 'float:right;')));
         $form->endFieldset();
