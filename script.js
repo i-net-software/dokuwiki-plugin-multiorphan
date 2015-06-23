@@ -69,7 +69,7 @@
         
         if ( canBeStopped ) {
             
-            reset();
+            $currentPagesAndMedia.stop = true;
             errorLog(getLang('request-aborted'));
             return false;
         }
@@ -82,7 +82,7 @@
 
             // Start cycling pages
             $currentPagesAndMedia = $result;
-            $currentPagesAndMedia.interval = Math.floor($currentPagesAndMedia.pages.length / 100);
+            $currentPagesAndMedia.interval = Math.floor($currentPagesAndMedia.pages.length / 10);
             checkpagesandmedia(jQuery.makeArray($result.pages));
         });
         
@@ -98,7 +98,7 @@
         var validateElement = function(result) {
             
             // Check if we still have elements in the elements list (cycle-list) and in the resultList (could be stopped.)
-            if ( elements && elements.length && $currentPagesAndMedia && $currentPagesAndMedia.pages && $currentPagesAndMedia.pages.length ) {
+            if ( elements && elements.length && !($currentPagesAndMedia && $currentPagesAndMedia.stop) ) {
                 var element = elements.pop();
                 status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+"): " + element);
                 request({'do':'checkpage','id':element}, function(response) {
@@ -112,7 +112,7 @@
             } else {
                 
                 // All done. Check for Orphans.                
-                findOrphans();
+                findOrphans(true);
                 
                 // Now we can leave.
                 status(getLang('checking-done'));
@@ -192,7 +192,7 @@
      * walk all linked pages and remove them from the ones that actually exist in the wiki
      * assign the result to the array.
      */
-    var findOrphans = function() {
+    var findOrphans = function(processCompleted) {
 
         // Sort out all not 
         var orphaned = function(linked, orphaned) {
@@ -209,20 +209,28 @@
         };
 
         status(getLang('checking-orphans'));
-        $orphanForm.find('.multiorphan__result_group .orphan.header').attr('count', null);
-        $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').html('');
-        
-        var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages .multiorphan__result.orphan');
         $currentResults.pages.orphan = orphaned($currentResults.pages.linked, $currentPagesAndMedia.pages);
-        jQuery.each($currentResults.pages.orphan, function(idx, orphan){
-            addGUIEntry($pagesOut, orphan, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
-        });        
-        
-        var $mediaOut = $orphanForm.find('.multiorphan__result_group.media .multiorphan__result.orphan');
         $currentResults.media.orphan = orphaned($currentResults.media.linked, $currentPagesAndMedia.media);
-        jQuery.each($currentResults.media.orphan, function(idx, orphan){
-            addGUIEntry($mediaOut, orphan, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
-        });        
+
+        var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages .multiorphan__result.orphan');
+        var $mediaOut = $orphanForm.find('.multiorphan__result_group.media .multiorphan__result.orphan');
+
+        $orphanForm.find('.multiorphan__result_group .orphan.header').attr('count', null);
+
+        if ( processCompleted == true ) {
+            $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').html('');
+            jQuery.each($currentResults.pages.orphan, function(idx, orphan){
+                addGUIEntry($pagesOut, orphan, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
+            });        
+            
+            jQuery.each($currentResults.media.orphan, function(idx, orphan){
+                addGUIEntry($mediaOut, orphan, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
+            });        
+        } else {
+            $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').append(jQuery('<div/>').html(getLang('please-wait-orphan')));
+            $pagesOut.prev('.header').attr('count', $currentResults.pages.orphan.length);
+            $mediaOut.prev('.header').attr('count', $currentResults.media.orphan.length);
+        }
     };
 
     /**
