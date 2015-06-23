@@ -17,6 +17,7 @@ $lang['startProcess'] = 'Start Process';
 $lang['start'] = 'Start'; 
 $lang['status'] = 'Status'; 
 $lang['ns'] = 'Set Namespace';
+$lang['idFilter'] = 'RegEx to filter full ID';
 
 $lang['depth'] = 'Depth';
 $lang['depthType'] = 'Export Type';

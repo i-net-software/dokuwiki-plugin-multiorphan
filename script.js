@@ -251,6 +251,7 @@
      */
     var request = function(data, success) {
         data['ns']     = $orphanForm.find('input[name=ns]').val();
+        data['filter']     = $orphanForm.find('input[name=filter]').val();
         data['sectok'] = $orphanForm.find('input[name=sectok]').val();
         // data['type']   = $orphanForm.find('select[name=type]').val() || 'both';
         data['call']   = 'multiorphan';

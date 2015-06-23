@@ -53,13 +53,18 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 
                 if ( $type == 'both' || $type == 'pages') {
                     $pages = array();
-                    search($pages,$conf['datadir'],'search_allpages',array(),$ns_dir);
+                    search($pages,$conf['datadir'],'search_universal',array(
+                        'listfiles' => true,
+                        'idmatch' => trim($INPUT->str('filter'))
+                    ),$ns_dir);
                     array_walk($pages, array($this, '__map_ids'));
                 }
         
                 if ( $type == 'both' || $type == 'media') {
                     $media = array();
-                    search($media,$conf['mediadir'],'search_media',array(),$ns_dir);
+                    search($media,$conf['mediadir'],'search_media',array(
+                        'pattern' => trim($INPUT->str('filter'))
+                    ),$ns_dir);
                     array_walk($media, array($this, '__map_ids'));
                 }
                 

@@ -49,6 +49,9 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->addElement(form_makeTextField('ns', getNS($ID), $this->getLang('ns') . ':', 'ns'));
         $form->addElement('<br/>');
         
+        $form->addElement(form_makeTextField('filter', '', $this->getLang('idFilter') . ':', 'filter'));
+        $form->addElement('<br/>');
+        
         $form->addElement(form_makeButton('submit', 'multiorphan', $this->getLang('start') , array('style' => 'float:right;')));
         $form->endFieldset();
 
