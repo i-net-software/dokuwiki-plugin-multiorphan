@@ -63,7 +63,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 if ( $type == 'both' || $type == 'media') {
                     $media = array();
                     search($media,$conf['mediadir'],'search_media',array(
-                        'pattern' => trim($INPUT->str('filter'))
+                        'pattern' => '/' . str_replace('/', '\/', trim($INPUT->str('filter'))) . '/'
                     ),$ns_dir);
                     array_walk($media, array($this, '__map_ids'));
                 }
