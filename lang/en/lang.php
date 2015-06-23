@@ -46,5 +46,6 @@ $lang['js']['checking-page'] = 'Checking page';
 $lang['js']['checking-orphans'] = 'Checking for orphans.';
 
 $lang['js']['error-parsing'] = 'Error parsing answer:';
+$lang['js']['please-wait-orphan'] = 'Please wait for the process to finish.';
 
 //Setup VIM: ex: et ts=4 enc=utf-8 :
