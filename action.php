@@ -148,29 +148,38 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $links        = array();
         $cns          = getNS($id);
         $exists       = false;
+
+        $pagesInstructions = array('internallink', 'camelcaselink');
+        $mediaInstructions = array('internalmedia');
+        
         foreach($instructions as $ins) {
+
+            $data = array(
+                
+                'instructions' => $ins[1],
+                'checkNamespace' => $cns,
+                'entryID' => $ins[1][0],
+                'type' => in_array($ins[0], $mediaInstructions) ? 'media' : ( in_array($ins[0], $pagesInstructions) ? 'pages' : null ),
+                'exists' => null,
+                
+            );
             
-            switch( $ins[0] ) {
-                case 'internallink'  : 
-                case 'camelcaselink' : {
+            $evt = new Doku_Event('MULTIORPHAN_INSTRUCTION_LINKED', $data);
 
-                    $mid = $ins[1][0];
-                    list($mid) = explode('#', $mid); //record pages without hashs
-                    resolve_pageid($cns, $mid, $exists);
-                    $links['pages'][$mid] += $exists ? 1 : 0;
-                    break;
+            // If prevented, this is definitely an orphan.
+            if ( $evt->advise_before() ) {
+                list($mid) = explode('#', $data['entryID']); //record pages without hashs
+                if ( !is_bool($data['exists']) && $data['type'] == 'media' ) {
+                    resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
+                } else if ( !is_bool($data['exists']) ) {
+                    resolve_pageid($data['checkNamespace'], $mid, $data['exists']);
                 }
-                
-                case 'internalmedia' : {
 
-                    $mid = $ins[1][0];
-                    list($mid) = explode('#', $mid); //record pages without hashs
-                    resolve_mediaid($cns, $mid, $exists);
-                    $links['media'][$mid] += $exists ? 1 : 0;
-                    break;
-                }
-                
+                $links[$data['type']][$mid] += (is_bool($data['exists']) && $data['exists']) || $exists ? 1 : 0;
             }
+
+            unset($evt);
+
         }
         return $links;
     }
