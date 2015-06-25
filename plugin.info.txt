@@ -1,7 +1,7 @@
 base   multiorphan
 author i-net software
 email  tools@inetsoftware.de
-date   2015-06-23
+date   2015-06-25
 name   multiorphan plugin
 desc   Adminstrative GUI to find all sorts of orphaned or wanted pages and media. This works using AJAX instead of loading everything into one page.
 url    http://github.com/inetsoftware/dokuwiki-plugin-multiorphan
