@@ -167,7 +167,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             $evt = new Doku_Event('MULTIORPHAN_INSTRUCTION_LINKED', $data);
 
             // If prevented, this is definitely an orphan.
-            if ( $evt->advise_before() ) {
+            if ( !is_null($data['type']) || ( $ins[0] == 'plugin' && $evt->advise_before() ) ) {
                 list($mid) = explode('#', $data['entryID']); //record pages without hashs
                 if ( !is_bool($data['exists']) && $data['type'] == 'media' ) {
                     resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
