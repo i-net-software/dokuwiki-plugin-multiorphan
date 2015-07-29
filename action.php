@@ -54,6 +54,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 if ( $type == 'both' || $type == 'pages') {
                     $pages = array();
                     search($pages,$conf['datadir'],'search_universal',array(
+                        'pagesonly' => true,
                         'listfiles' => true,
                         'idmatch' => trim($INPUT->str('filter'))
                     ),$ns_dir);
