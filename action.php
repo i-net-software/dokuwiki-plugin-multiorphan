@@ -151,7 +151,8 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
         $pagesInstructions = array('internallink', 'camelcaselink');
         $mediaInstructions = array('internalmedia');
-        
+
+        if ( !is_array($instructions) ) { return $links; }
         foreach($instructions as $ins) {
 
             $data = array(
