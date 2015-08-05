@@ -1,3 +1,3 @@
 ====== multiORPHAN Checker ======
 
-Checks for orphaned and wanted pages and media files.
+取り残されたり不足しているページやメディアファイルを確認します。
