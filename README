@@ -3,7 +3,7 @@ multiorphan Plugin for DokuWiki
 Adminstrative GUI to find all sorts of orphaned or wanted pages and media. This works using AJAX instead of loading everything into one page.
 
 All documentation for this plugin can be found at
-http://github.com/inetsoftware/dokuwiki-plugin-multiorphan
+https://github.com/i-net-software/dokuwiki-plugin-multiorphan
 
 If you install this plugin manually, make sure it is installed in
 lib/plugins/multiorphan/ - if the folder is called different it
