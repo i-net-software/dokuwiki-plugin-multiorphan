@@ -171,6 +171,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             // If prevented, this is definitely an orphan.
             if ( !is_null($data['type']) || ( $ins[0] == 'plugin' && $evt->advise_before() ) ) {
                 list($mid) = explode('#', $data['entryID']); //record pages without hashs
+                list($mid) = explode('?', $mid); //record pages without question mark
                 if ( !is_bool($data['exists']) && $data['type'] == 'media' ) {
                     resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
                 } else if ( !is_bool($data['exists']) ) {
