@@ -1,39 +1,51 @@
 <?php
-
 /**
- * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * 
- * @author Hideaki SAWADA <chuno@live.jp>
+ * english language file
  */
-$lang['encoding']              = 'utf-8';
-$lang['direction']             = 'ltr';
-$lang['menu']                  = 'multiORPHANS';
-$lang['startingNamespace']     = '起点とする名前空間を入力して下さい';
-$lang['startProcess']          = 'Start Process';
-$lang['start']                 = '開始';
-$lang['status']                = '状態';
-$lang['ns']                    = '名前空間';
-$lang['idFilter']              = 'RegEx to filter full ID';
-$lang['purge']                 = 'Purge cache for checked ID';
-$lang['depth']                 = '階層';
-$lang['depthType']             = 'Export Type';
-$lang['depth.pageOnly']        = 'このページのみ';
-$lang['depth.allSubNameSpaces'] = '全てのサブ名前空間';
-$lang['depth.specifiedDepth']  = '指定の階層';
-$lang['type']                  = 'What to check';
-$lang['type.pages']            = 'ページのみ';
-$lang['type.media']            = 'メディアのみ';
-$lang['type.both']             = 'ページとメディア';
-$lang['pages-result']          = 'ページ確認の結果';
-$lang['media-result']          = 'メディア確認の結果';
-$lang['wanted']                = 'Wanted';
-$lang['orphan']                = 'Orphaned';
-$lang['linked']                = 'Linked';
-$lang['js']['request-aborted'] = '中止した要求';
-$lang['js']['start']           = '開始';
-$lang['js']['stop']            = '停止';
-$lang['js']['checking-done']   = 'ページ確認が終了しました';
-$lang['js']['checking-page']   = 'ページ確認中';
-$lang['js']['checking-orphans'] = '取り残し確認中';
-$lang['js']['error-parsing']   = 'Error parsing answer:';
-$lang['js']['please-wait-orphan'] = '処理が終了するのをお待ちください。';
+ 
+// settings must be present and set appropriately for the language
+$lang['encoding']   = 'utf-8';
+$lang['direction']  = 'ltr';
+ 
+// for admin plugins, the menu prompt to be displayed in the admin menu
+// if set here, the plugin doesn't need to override the getMenuText() method
+$lang['menu'] = 'multiORPHANS'; 
+
+$lang['startingNamespace'] = 'Enter your starting Namespace'; 
+
+$lang['startProcess'] = 'Start Process'; 
+$lang['start'] = 'Start'; 
+$lang['status'] = 'Status'; 
+$lang['ns'] = 'Set Namespace';
+$lang['idFilter'] = 'RegEx to filter full ID';
+$lang['purge'] = 'Purge cache for checked ID';
+
+$lang['depth'] = 'Depth';
+$lang['depthType'] = 'Export Type';
+$lang['depth.pageOnly'] = 'this page only';
+$lang['depth.allSubNameSpaces'] = 'all sub namespaces';
+$lang['depth.specifiedDepth'] = 'specified depth';
+
+$lang['type'] = 'What to check';
+$lang['type.pages'] = 'Pages only';
+$lang['type.media'] = 'Media only';
+$lang['type.both'] = 'Pages and Media';
+
+$lang['pages-result'] = 'Result of PAGES check';
+$lang['media-result'] = 'Result of MEDIA check';
+$lang['wanted'] = 'Wanted';
+$lang['orphan'] = 'Orphaned';
+$lang['linked'] = 'Linked';
+
+$lang['js']['request-aborted'] = 'Request aborted';
+$lang['js']['start'] = 'Start';
+$lang['js']['stop'] = 'Stop';
+
+$lang['js']['checking-done'] = 'Done checking the pages';
+$lang['js']['checking-page'] = 'Checking page';
+$lang['js']['checking-orphans'] = 'Checking for orphans.';
+
+$lang['js']['error-parsing'] = 'Error parsing answer:';
+$lang['js']['please-wait-orphan'] = 'Please wait for the process to finish.';
+
+//Setup VIM: ex: et ts=4 enc=utf-8 :
