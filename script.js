@@ -112,7 +112,7 @@
             if ( elements && elements.length && !($currentPagesAndMedia && $currentPagesAndMedia.stop) ) {
                 var element = elements.pop();
                 
-                status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+" " + getTimeDifference() + "): " + element);
+                status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+" " + getTimeDifference() + "):<br/>" + element);
                 request({'do':'checkpage','id':element}, function(response) {
                     checkResponseForWantedAndLinked(response, element);
 
