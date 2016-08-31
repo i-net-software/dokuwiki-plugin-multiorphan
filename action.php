@@ -200,19 +200,15 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 $event->data['entryID'] = $instructions[1][1];
                 $event->data['type'] = 'page';
                 return true;
-                break;
             case 'imagemapping':
                 $event->data['type'] = $this->getInternalMediaType($instructions[1][1]);
                 $event->data['entryID'] = $instructions[1][2];
                 return true;
-                break;
             case 'mp3play':
                 $event->data['entryID'] = $instructions[1]['mp3'];
                 return true;
-                break;
             default:
                 print_r($instructions);
-                break;
         }
         
         return false;
