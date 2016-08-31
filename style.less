@@ -5,10 +5,13 @@
 
 #multiorphan {
     
+    display: block;
+    width: 100%;
     
     fieldset {
 	
 	    text-align: left;
+	    min-width: 0; // this makes the fieldset behave correctly.
 	    
 	    label {
     	    
@@ -37,6 +40,14 @@
 	    p {
             clear: both;
 	    }
+    }
+    
+    #multiorphan__out {
+        min-height: 3em;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+	    overflow: hidden;
+	    max-width: 100%;
     }
     
     .multiorphan__throbber, .multiorphan__throbber img {

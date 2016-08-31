@@ -59,10 +59,11 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->endFieldset();
 
         $form->startFieldset( $this->getLang('status') );
-        $form->addElement(form_makeTag('span', array('id' => 'multiorphan__out')));
+        $form->addElement(form_makeTag('div', array('id' => 'multiorphan__out')));
         $form->addElement(form_makeOpenTag('span', array('class' => 'multiorphan__throbber')));
         $form->addElement(form_makeTag('img', array('src' => DOKU_BASE.'lib/images/loading.gif', 'id' => 'multiorphan__throbber')));
         $form->addElement(form_makeCloseTag('span'));
+        $form->addElement(form_makeCloseTag('div'));
         $form->endFieldset();
 
         $this->__makeForm($form, 'pages');
