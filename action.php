@@ -206,7 +206,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
     public function handle_unknown_instructions(Doku_Event &$event) {
 
         $instructions = $event->data['instructions'];
-        $event->data['type'] = 'media';
         switch( $instructions[0] ) {
             case 'include_include':
                 $event->data['entryID'] = $instructions[1][1];
@@ -218,6 +217,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 return true;
             case 'mp3play':
                 $event->data['entryID'] = $instructions[1]['mp3'];
+                $event->data['type'] = 'media';
                 return true;
             default:
                 // print_r($instructions);
