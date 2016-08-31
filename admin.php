@@ -7,7 +7,7 @@
  */
 
 // must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
+if (!defined('DOKU_INC')) die();
 
 class admin_plugin_multiorphan extends DokuWiki_Admin_Plugin {
 
@@ -19,7 +19,7 @@ class admin_plugin_multiorphan extends DokuWiki_Admin_Plugin {
         return 200;
     }
 
-    function forAdminOnly(){
+    function forAdminOnly() {
         return false;
     }
 
@@ -34,7 +34,7 @@ class admin_plugin_multiorphan extends DokuWiki_Admin_Plugin {
      */
     public function html() {
 
-        if ( ! $functions = $this->loadHelper('multiorphan') ) {
+        if (!$functions = $this->loadHelper('multiorphan')) {
             msg("Can't initialize the multiorphan plugin");
             return false;
         }
