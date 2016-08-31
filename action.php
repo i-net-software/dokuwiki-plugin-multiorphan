@@ -7,7 +7,9 @@
  */
 
 // must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
+if(!defined('DOKU_INC')) {
+    die();
+}
 
 class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
@@ -24,8 +26,8 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
      */
     public function register(Doku_Event_Handler $controller) {
 
-       $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call_unknown');
-       $controller->register_hook('MULTIORPHAN_INSTRUCTION_LINKED', 'BEFORE', $this, 'handle_unknown_instructions');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call_unknown');
+        $controller->register_hook('MULTIORPHAN_INSTRUCTION_LINKED', 'BEFORE', $this, 'handle_unknown_instructions');
    
     }
 
@@ -35,16 +37,22 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
      * @param Doku_Event $event  event object by reference
      * @param mixed      $param  [the parameters passed as fifth argument to register_hook() when this
      *                           handler was registered]
-     * @return void
+     * @return false|null
      */
 
     public function handle_ajax_call_unknown(Doku_Event &$event, $param) {
 
         global $INPUT, $conf, $AUTH;
 
-        if ( $event->data != 'multiorphan' ) return false;
-        if ((!$helper = $this->loadHelper('multiorphan'))) return false;
-        if ( !checkSecurityToken() ) return false;
+        if ( $event->data != 'multiorphan' ) {
+            return false;
+        }
+        if ((!$helper = $this->loadHelper('multiorphan'))) {
+            return false;
+        }
+        if ( !checkSecurityToken() ) {
+            return false;
+        }
         $event->preventDefault();
         
         $namespace = $INPUT->str('ns');
@@ -106,7 +114,9 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 ob_end_clean();
                 
                 // If there is no content, this could be a link only
-                if ( !empty( $result['dialogContent'] ) ) break;
+                if ( !empty( $result['dialogContent'] ) ) {
+                    break;
+                }
             }
             
             case 'viewPage' : {
@@ -119,13 +129,13 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             case 'deleteMedia' : {
                 
                 $link = $INPUT->str('link');
-                $status = media_delete($link,$AUTH);
+                $status = media_delete($link, $AUTH);
                 break;
             }
             
             default: {
                 $result = array(
-                   'error' => 'I do not know what to do.'
+                    'error' => 'I do not know what to do.'
                 );
                 break;
             }
@@ -151,13 +161,13 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         global $conf;
         
         $file         = wikiFN($id);
-        $instructions = p_cached_instructions($file,false,$id);
+        $instructions = p_cached_instructions($file, false, $id);
         $links        = array();
         $cns          = getNS($id);
         $exists       = false;
 
-        if ( !is_array($instructions) ) { return $links; }
-        foreach($instructions as $ins) {
+        if (!is_array($instructions)) { return $links; }
+        foreach ($instructions as $ins) {
 
             $data = array(
                 
@@ -172,12 +182,12 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             $evt = new Doku_Event('MULTIORPHAN_INSTRUCTION_LINKED', $data);
 
             // If prevented, this is definitely an orphan.
-            if ( !is_null($data['type']) || ( $ins[0] == 'plugin' && $evt->advise_before() ) ) {
+            if (!is_null($data['type']) || ($ins[0] == 'plugin' && $evt->advise_before())) {
                 list($mid) = explode('#', $data['entryID']); //record pages without hashs
                 list($mid) = explode('?', $mid); //record pages without question mark
-                if ( !is_bool($data['exists']) && $data['type'] == 'media' ) {
+                if (!is_bool($data['exists']) && $data['type'] == 'media') {
                     resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
-                } else if ( !is_bool($data['exists']) ) {
+                } else if (!is_bool($data['exists'])) {
                     resolve_pageid($data['checkNamespace'], $mid, $data['exists']);
                 }
 
@@ -191,11 +201,11 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
     }
 
     
-    function handle_unknown_instructions(Doku_Event &$event) {
+    function handle_unknown_instructions(Doku_Event&$event) {
 
         $instructions = $event->data['instructions'];
         $event->data['type'] = 'media';
-        switch( $instructions[0] ) {
+        switch ($instructions[0]) {
             case 'include_include':
                 $event->data['entryID'] = $instructions[1][1];
                 $event->data['type'] = 'page';
@@ -214,8 +224,8 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         return false;
     }
     
-    private function getInternalMediaType( $ins ) {
-        return in_array($ins, $this->mediaInstructions) ? 'media' : ( in_array($ins, $this->pagesInstructions) ? 'pages' : null );
+    private function getInternalMediaType($ins) {
+        return in_array($ins, $this->mediaInstructions) ? 'media' : (in_array($ins, $this->pagesInstructions) ? 'pages' : null);
     }
 }
 
