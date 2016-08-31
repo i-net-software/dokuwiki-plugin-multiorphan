@@ -190,8 +190,10 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         return $links;
     }
 
-    
-    function handle_unknown_instructions(Doku_Event &$event) {
+    /**
+     * Handles unknown instructions using the Event.
+     */
+    private function handle_unknown_instructions(Doku_Event &$event) {
 
         $instructions = $event->data['instructions'];
         $event->data['type'] = 'media';
