@@ -7,7 +7,7 @@
  */
 
 // must be run within Dokuwiki
-if(!defined('DOKU_INC')) die();
+if (!defined('DOKU_INC')) die();
 
 class helper_plugin_multiorphan extends DokuWiki_Plugin {
 
@@ -44,7 +44,7 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         print $this->locale_xhtml('intro');
 
         $form = new Doku_Form('multiorphan', null, 'post');
-        $form->startFieldset( $this->getLang('startProcess') );
+        $form->startFieldset($this->getLang('startProcess'));
 
         $form->addElement(form_makeTextField('ns', getNS($ID), $this->getLang('ns') . ':', 'ns'));
         $form->addElement('<br/>');
@@ -75,23 +75,23 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
 
     private function __makeForm(&$form, $type) {
         
-        $form->startFieldset( $this->getLang($type.'-result') );
-        $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result_group '.$type)));
+        $form->startFieldset($this->getLang($type . '-result'));
+        $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result_group ' . $type)));
 
         $form->addElement(form_makeOpenTag('h3', array('class' => 'header wanted')));
-        $form->addElement( $this->getLang('wanted') );
+        $form->addElement($this->getLang('wanted'));
         $form->addElement(form_makeCloseTag('h3'));
         $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result wanted')));
         $form->addElement(form_makeCloseTag('div'));
 
         $form->addElement(form_makeOpenTag('h3', array('class' => 'header orphan')));
-        $form->addElement( $this->getLang('orphan') );
+        $form->addElement($this->getLang('orphan'));
         $form->addElement(form_makeCloseTag('h3'));
         $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result orphan')));
         $form->addElement(form_makeCloseTag('div'));
 
         $form->addElement(form_makeOpenTag('h3', array('class' => 'header linked')));
-        $form->addElement( $this->getLang('linked') );
+        $form->addElement($this->getLang('linked'));
         $form->addElement(form_makeCloseTag('h3'));
         $form->addElement(form_makeOpenTag('div', array('class' => 'multiorphan__result linked')));
         $form->addElement(form_makeCloseTag('div'));
