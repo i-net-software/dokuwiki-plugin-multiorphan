@@ -11,6 +11,11 @@ if(!defined('DOKU_INC')) die();
 
 class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
+
+    private $pagesInstructions = array('internallink', 'camelcaselink');
+    private $mediaInstructions = array('internalmedia');
+
+
     /**
      * Registers a callback function for a given event
      *
@@ -20,6 +25,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
     public function register(Doku_Event_Handler $controller) {
 
        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call_unknown');
+       $controller->register_hook('MULTIORPHAN_INSTRUCTION_LINKED', 'BEFORE', $this, 'handle_unknown_instructions');
    
     }
 
@@ -150,9 +156,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $cns          = getNS($id);
         $exists       = false;
 
-        $pagesInstructions = array('internallink', 'camelcaselink');
-        $mediaInstructions = array('internalmedia');
-
         if ( !is_array($instructions) ) { return $links; }
         foreach($instructions as $ins) {
 
@@ -161,7 +164,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 'instructions' => $ins[1],
                 'checkNamespace' => $cns,
                 'entryID' => $ins[1][0],
-                'type' => in_array($ins[0], $mediaInstructions) ? 'media' : ( in_array($ins[0], $pagesInstructions) ? 'pages' : null ),
+                'type' => $this->getInternalMediaType($ins[0]),
                 'exists' => null,
                 
             );
@@ -185,6 +188,38 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
         }
         return $links;
+    }
+
+    
+    function handle_unknown_instructions(Doku_Event &$event) {
+
+        $instructions = $event->data['instructions'];
+        $event->data['type'] = 'media';
+        switch( $instructions[0] ) {
+            case 'include_include':
+                $event->data['entryID'] = $instructions[1][1];
+                $event->data['type'] = 'page';
+                return true;
+                break;
+            case 'imagemapping':
+                $event->data['type'] = $this->getInternalMediaType($instructions[1][1]);
+                $event->data['entryID'] = $instructions[1][2];
+                return true;
+                break;
+            case 'mp3play':
+                $event->data['entryID'] = $instructions[1]['mp3'];
+                return true;
+                break;
+            default:
+                print_r($instructions);
+                break;
+        }
+        
+        return false;
+    }
+    
+    private function getInternalMediaType( $ins ) {
+        return in_array($ins, $this->mediaInstructions) ? 'media' : ( in_array($ins, $this->pagesInstructions) ? 'pages' : null );
     }
 }
 
