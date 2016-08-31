@@ -220,7 +220,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 $event->data['entryID'] = $instructions[1]['mp3'];
                 return true;
             default:
-                print_r($instructions);
+                // print_r($instructions);
         }
         
         return false;
