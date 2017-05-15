@@ -158,7 +158,7 @@
 
         var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"] > ul');
         if ( !$appendTo.length ) {
-            var $wrapper = jQuery('<div/>').text(id).addClass('entry').attr('elementid', id).appendTo($insertPoint);
+            var $wrapper = jQuery('<div/>').addClass('entry').attr('elementid', id).append(jQuery('<span/>').text(id)).appendTo($insertPoint);
             guiElementActions(actions, id, $wrapper);
 
             $appendTo = jQuery('<ul/>').appendTo($wrapper);
