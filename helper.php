@@ -38,7 +38,7 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
      */
     public function __multiorphan_gui() {
 
-		
+        
         global $ID, $conf;
 
         print $this->locale_xhtml('intro');
