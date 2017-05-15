@@ -30,6 +30,7 @@ $lang['media-result']             = 'Ergebnis der Medienüberprüfung';
 $lang['wanted']                   = 'Benötigt';
 $lang['orphan']                   = 'Verwaist';
 $lang['linked']                   = 'Verlinkt';
+$lang['checkExternal']            = 'Externe URLs prüfen';
 $lang['js']['request-aborted']    = 'Anfrage abgebrochen';
 $lang['js']['start']              = 'Start';
 $lang['js']['stop']               = 'Stop';

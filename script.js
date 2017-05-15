@@ -12,7 +12,7 @@
                 click: function() {
                     var $link = jQuery(this);
                     request({'do':'view'+type, 'link':$link.attr('elementid')}, function(response){
-                        
+
                         if ( response.dialogContent ) {
                             jQuery('<div/>').attr('id', 'multiorphan__preview_dialog').appendTo('body').dialog({
                                 title:'Preview',
@@ -34,7 +34,7 @@
                 }
             }
         },
-        
+
         delete : function(type) {
             return {
                 label: 'Delete',
@@ -48,7 +48,7 @@
                 }
             }
         }
-        
+
     };
 
     var init = function() {
@@ -60,20 +60,21 @@
         });
         reset();
     };
-    
+
     /**
      * Load all pages and media
      * Cycle the result.
      */
     var loadpages = function(event) {
-        
+
         if ( canBeStopped ) {
-            
+
+            canBeStopped = false;
             $currentPagesAndMedia.stop = true;
             errorLog(getLang('request-aborted'));
             return false;
         }
-        
+
         reset(true);
         canBeStopped = true;
         event.stopPropagation();
@@ -85,10 +86,10 @@
             $currentPagesAndMedia.interval = 1;//Math.floor($currentPagesAndMedia.pages.length / 10);
             checkpagesandmedia(jQuery.makeArray($result.pages));
         });
-        
+
         return false;
     };
-    
+
     /**
      * Time Check while running
      */
@@ -107,11 +108,11 @@
 
         // Cycle pages. Media is implicite.
         var validateElement = function(result) {
-            
+
             // Check if we still have elements in the elements list (cycle-list) and in the resultList (could be stopped.)
             if ( elements && elements.length && !($currentPagesAndMedia && $currentPagesAndMedia.stop) ) {
                 var element = elements.pop();
-                
+
                 status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+" " + getTimeDifference() + "):<br/>" + element);
                 request({'do':'checkpage','id':element}, function(response) {
                     checkResponseForWantedAndLinked(response, element);
@@ -122,21 +123,21 @@
                     //}
                 }).always(validateElement);
             } else {
-                
+
                 // All done. Check for Orphans.                
                 findOrphans(true);
-                
+
                 // Now we can leave.
                 status(getLang('checking-done'));
                 reset();
             }
         };
-        
+
         validateElement();
     };
-    
+
     var guiElementActions = function(actions, id, $insertPoint) {
-        
+
         // Add actions
         var $buttonSet = jQuery('<div/>').addClass('actions').appendTo($insertPoint);
         jQuery.each(actions||[], function(idx, action) {
@@ -146,7 +147,7 @@
             }
         })
     };
-    
+
     /**
      * Add an entry to the accordion of the according type.
      */
@@ -154,26 +155,26 @@
 
         var $header = $insertPoint.prev('.header');
         $header.attr('count', parseInt($header.attr('count')||0)+1);
-        
+
         var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"] > ul');
         if ( !$appendTo.length ) {
             var $wrapper = jQuery('<div/>').text(id).addClass('entry').attr('elementid', id).appendTo($insertPoint);
             guiElementActions(actions, id, $wrapper);
-            
+
             $appendTo = jQuery('<ul/>').appendTo($wrapper);
         }
-        
+
         if ( requestPage && requestPage.length ) {
             var $entry = jQuery('<li/>').addClass('requestPage').text(requestPage).appendTo($appendTo);
             guiElementActions(actions, requestPage, $entry);
         }
     };
-    
+
     /**
      * Build up the structure for linked and wanted pages
      */
     var checkResponseForWantedAndLinked = function(response, requestPage) {
-        
+
         // Fill the $currentResults object with information.
         var checkResponse = function( id, amount, object, $output, actions ) {
 
@@ -181,25 +182,27 @@
             if ( !Array.isArray(checkPoint[id]) ) {
                 checkPoint[id] = [];
             }
-            
+
             if ( checkPoint[id].indexOf(requestPage) == -1 ) {
                 checkPoint[id].push(requestPage);
             }
-            
+
             addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), id, requestPage, actions);
         };
-      
+
         var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
         var $mediaOut = $orphanForm.find('.multiorphan__result_group.media');
         jQuery.each((response||{}).pages||[], function(page, amount){
             checkResponse(page, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('Page')]);
         });
-      
+        jQuery.each((response||{}).urls||[], function(page, amount){
+            checkResponse(page, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('URL')]);
+        });
         jQuery.each((response||{}).media||[], function(media, amount){
             checkResponse(media, amount, $currentResults.media, $mediaOut, [ORPHANACTIONS.view('Media')]);
         });
     };
-    
+
     /**
      * walk all linked pages and remove them from the ones that actually exist in the wiki
      * assign the result to the array.
@@ -208,16 +211,16 @@
 
         // Sort out all not 
         var orphaned = function(linked, original) {
-            
+
             if ( !original || !original.length ) return [];
             var orphaned = jQuery.makeArray(original); // make copy
-            
+
             jQuery.each(linked, function(link) {
                 if ( (idx = orphaned.indexOf(link)) > -1 ) {
                     orphaned.splice(idx, 1);
                 }
             });
-            
+
             return orphaned;
         };
 
@@ -235,7 +238,7 @@
             jQuery.each($currentResults.pages.orphan, function(idx, orphan){
                 addGUIEntry($pagesOut, orphan, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
             });        
-            
+
             jQuery.each($currentResults.media.orphan, function(idx, orphan){
                 addGUIEntry($mediaOut, orphan, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
             });        
@@ -253,11 +256,15 @@
         data['ns']     = $orphanForm.find('input[name=ns]').val();
         data['filter']     = $orphanForm.find('input[name=filter]').val();
         data['sectok'] = $orphanForm.find('input[name=sectok]').val();
-        
-        if ( $orphanForm.find('input[name=purge]').has(':checked') ) {
+
+        if ( $orphanForm.find('input[name=purge]').is(':checked') ) {
             data['purge'] = true
         }
-        
+
+        if ( $orphanForm.find('input[name=checkExternal]').is(':checked') ) {
+            data['checkExternal'] = true
+        }
+
         // data['type']   = $orphanForm.find('select[name=type]').val() || 'both';
         data['call']   = 'multiorphan';
 
@@ -329,8 +336,7 @@
     var resetErrorLog = function() {
         jQuery('#multiorphan__errorlog').remove();
     };
-    
-            
+
     /**
      * Display the loading gif
      */
@@ -339,13 +345,13 @@
         throbberCount = Math.max(0, throbberCount + (on?1:-1));
         jQuery('#multiorphan__throbber').css('visibility', throbberCount>0 ? 'visible' : 'hidden');
     };
-    
+
     var reset = function(fullReset) {
         canBeStopped = false;
-        
+
         // Result Object
         $currentResults = {
-            
+
             pages: {
                 linked: {},
                 wanted: {},
@@ -363,17 +369,17 @@
 
         throbber(false);
         $orphanForm.find('input[type=submit]').val(getLang('start'));
-        
+
         if ( fullReset === true ) {
             resetErrorLog();
             $orphanForm.find('.multiorphan__result_group .header').attr('count', null);
             $orphanForm.find('.multiorphan__result_group .multiorphan__result').html('');
         }
     };
-    
+
     var getLang = function(key) {
         return LANG.plugins.multiorphan ? LANG.plugins.multiorphan[key] : key;
     };
-    
+
     jQuery(document).ready(init);
 })();

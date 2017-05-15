@@ -47,15 +47,24 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->startFieldset($this->getLang('startProcess'));
 
         $form->addElement(form_makeTextField('ns', getNS($ID), $this->getLang('ns') . ':', 'ns'));
-        $form->addElement('<br/>');
+        $form->addElement(form_makeTag('br'));
         
         $form->addElement(form_makeTextField('filter', '', $this->getLang('idFilter') . ':', 'filter'));
-        $form->addElement('<br/>');
-
+        $form->addElement(form_makeTag('br'));
+/*
         $form->addElement(form_makeCheckboxField('purge', 1, $this->getLang('purge') . ':', 'purge'));
+        $form->addElement(form_makeTag('br'));
+*/
+        $form->addElement(form_makeCheckboxField('checkExternal', 1, $this->getLang('checkExternal') . '<span style="color:#00f">*</span>:', 'checkExternal'));
         $form->addElement(form_makeTag('br'));
         
         $form->addElement(form_makeButton('submit', 'multiorphan', $this->getLang('start') , array('style' => 'float:right;')));
+
+        $form->addElement(form_makeTag('br'));
+        $form->addElement(form_makeOpenTag('sub'));
+        $form->addElement('<span style="color:#00f">*</span> ');
+        $form->addElement($this->getLang('checkExternalHint'));
+        $form->addElement(form_makeCloseTag('sub'));
         $form->endFieldset();
 
         $form->startFieldset( $this->getLang('status') );

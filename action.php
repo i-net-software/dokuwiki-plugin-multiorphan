@@ -13,10 +13,13 @@ if(!defined('DOKU_INC')) {
 
 class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
-
+    private $checkInstructions = array('plugin', 'externallink', 'interwikilink');
     private $pagesInstructions = array('internallink', 'camelcaselink');
     private $mediaInstructions = array('internalmedia');
 
+    private $httpClient = null;
+    private $renderer = null;
+    private $checkExternal = false;
 
     /**
      * Registers a callback function for a given event
@@ -57,6 +60,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         
         $namespace = $INPUT->str('ns');
         $ns_dir  = utf8_encodeFN(str_replace(':','/',$namespace));
+        $this->checkExternal = $INPUT->bool('checkExternal');
         $result  = array();
     
         switch( $INPUT->str('do') ) {
@@ -119,6 +123,12 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 }
             }
             
+            case 'viewURL' : {
+
+                $result = array('link' => $INPUT->str('link'));
+                break;
+            }
+            
             case 'viewPage' : {
                 
                 $link = $INPUT->str('link');
@@ -174,15 +184,16 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 'instructions' => $ins[1],
                 'checkNamespace' => $cns,
                 'entryID' => $ins[1][0],
+                'syntax' => $ins[0],
                 'type' => $this->getInternalMediaType($ins[0]),
                 'exists' => null,
                 
             );
-            
+
             $evt = new Doku_Event('MULTIORPHAN_INSTRUCTION_LINKED', $data);
 
             // If prevented, this is definitely an orphan.
-            if (!is_null($data['type']) || ($ins[0] == 'plugin' && $evt->advise_before())) {
+            if (!is_null($data['type']) || (in_array($ins[0], $this->checkInstructions) && $evt->advise_before())) {
                 list($mid) = explode('#', $data['entryID']); //record pages without hashs
                 list($mid) = explode('?', $mid); //record pages without question mark
                 if (!is_bool($data['exists']) && $data['type'] == 'media') {
@@ -206,26 +217,69 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
     public function handle_unknown_instructions(Doku_Event &$event) {
 
         $instructions = $event->data['instructions'];
-        switch( $instructions[0] ) {
-            case 'include_include':
-                $event->data['entryID'] = $instructions[1][1];
-                $event->data['type'] = 'page';
+        switch( $event->data['syntax'] ) {
+
+            case 'interwikilink': {
+                
+                if ( ! $this->checkExternal ) { return false; }
+                $this->_init_renderer();
+                $exists = false;
+                $event->data['entryID'] = $this->renderer->_resolveInterWiki($instructions[2], $instructions[3], $exists);
+
+                $this->_init_http_client();
+                $data = $this->httpClient->get( $instructions[0] );
+                $event->data['exists'] = $data->status == 200;
+            }
+            case 'externallink': {
+
+                if ( ! $this->checkExternal ) { return false; }
+                $this->_init_http_client();
+                $data = $this->httpClient->get( $event->data['entryID'] );
+                $event->data['exists'] = $this->httpClient->status == 200;
+                $event->data['type'] = 'urls';
                 return true;
-            case 'imagemapping':
-                $event->data['type'] = $this->getInternalMediaType($instructions[1][1]);
-                $event->data['entryID'] = $instructions[1][2];
-                return true;
-            case 'mp3play':
-                $event->data['entryID'] = $instructions[1]['mp3'];
-                $event->data['type'] = 'media';
-                return true;
-            default:
-                // print_r($instructions);
+            }
+            case 'plugin': {
+                switch( $instructions[0] ) {
+                    case 'include_include':
+                        $event->data['entryID'] = $instructions[1][1];
+                        $event->data['type'] = 'page';
+                        return true;
+                    case 'imagemapping':
+                        $event->data['type'] = $this->getInternalMediaType($instructions[1][1]);
+                        $event->data['entryID'] = $instructions[1][2];
+                        return true;
+                    case 'mp3play':
+                        $event->data['entryID'] = $instructions[1]['mp3'];
+                        $event->data['type'] = 'media';
+                        return true;
+                    default:
+                        // print_r($instructions);
+                }
+            }
         }
-        
+
         return false;
     }
-    
+
+    private function _init_http_client() {
+        if ( $this->httpClient != null ) {
+            return;
+        }
+
+        @include_once( DOKU_INC . '/HTTPClient.php');
+        $this->httpClient = new DokuHTTPClient();
+    }
+
+    private function _init_renderer() {
+        if ( $this->renderer != null ) {
+            return;
+        }
+
+        $this->renderer = new Doku_Renderer();
+        $this->renderer->interwiki = getInterwiki();
+    }
+
     private function getInternalMediaType($ins) {
         return in_array($ins, $this->mediaInstructions) ? 'media' : (in_array($ins, $this->pagesInstructions) ? 'pages' : null);
     }

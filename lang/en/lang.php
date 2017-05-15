@@ -36,6 +36,10 @@ $lang['media-result'] = 'Result of MEDIA check';
 $lang['wanted'] = 'Wanted';
 $lang['orphan'] = 'Orphaned';
 $lang['linked'] = 'Linked';
+$lang['checkExternal'] = 'Check external URLs';
+$lang['checkExternalHint'] = 'Implies a performance hit due to checking external pages for HTTP status "200 OK".';
+
+
 
 $lang['js']['request-aborted'] = 'Request aborted';
 $lang['js']['start'] = 'Start';
