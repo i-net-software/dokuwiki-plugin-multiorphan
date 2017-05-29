@@ -200,6 +200,17 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
                 } else if (!is_bool($data['exists'])) {
                     resolve_pageid($data['checkNamespace'], $mid, $data['exists']);
+                    if ( $data['exists'] && !empty( $hash) ) {
+                        // check for 'locallink' in a different page than the current one
+                        $linkData = array(
+                            'pageID' => $mid,
+                            'entryID' => $hash,
+                            'exists' => null,
+                        );
+                        
+                        $this->_check_locallink( $linkData );
+                        $data['exists'] = $linkData['exists'];
+                    }
                 }
 
                 $links[$data['type']][$mid . (!empty($hash)?'#'.$hash:'')] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
@@ -209,6 +220,26 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
         }
         return $links;
+    }
+    
+    private function _check_locallink( &$data ) {
+        $this->_init_renderer();
+        $renderer = &$this->renderer;
+        $data['type'] = 'pages';
+        $instructions = p_cached_instructions(wikiFN($data['pageID']), false, $data['pageID']);
+        $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
+            // Closure requires PHP >= 5.3
+            if ( $input[0] != 'header' ) {
+                return false;
+            }
+    
+            $hid = $renderer->_headerToLink( $input[1][0], true);
+            $check = $renderer->_headerToLink( $data['entryID'], false);
+            return ($hid == $check);
+        });
+    
+        $data['entryID'] = $data['pageID'] . '#' . $data['entryID'];
+        $data['exists'] = count($result) > 0;
     }
 
     /**
@@ -220,25 +251,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         switch( $event->data['syntax'] ) {
 
             case 'locallink': {
-                $this->_init_renderer();
-                $exists = false;
-                $renderer = &$this->renderer;
-                $data = &$event->data;
-                $data['type'] = 'pages';
-                $instructions = p_cached_instructions(wikiFN($event->data['pageID']), false, $event->data['pageID']);
-                $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
-                    // Closure requires PHP >= 5.3
-                    if ( $input[0] != 'header' ) {
-                        return false;
-                    }
-
-                    $hid = $renderer->_headerToLink( $input[1][0], true);
-                    $check = $renderer->_headerToLink( $data['entryID'], false);
-                    return ($hid == $check);
-                });
-
-                $data['entryID'] = $data['pageID'] . '#' . $data['entryID'];
-                $data['exists'] = count($result) > 0;
+                $this->_check_locallink( $event->data );
             }
             case 'interwikilink': {
                 
