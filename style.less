@@ -2,46 +2,44 @@
     visibility: hidden;
 }
 
-
 #multiorphan {
-    
+
     display: block;
     width: 100%;
-    
+
     fieldset {
-    
+
         text-align: left;
         min-width: 0; // this makes the fieldset behave correctly.
-        
+
         label {
-            
-            
+
             input, select {
                 float: right;
                 text-align: left;
                 width: 50%;
             }
-            
+
             input[type=checkbox] {
                 width: 3%;
                 margin: 4px;
                 margin-right: 47%;
             }
         }
-        
+
         legend, fieldset.hideOptions .forceVisible {
             display: block !important;
         }
-        
+
         br {
             clear: both;
         }
-        
+
         p {
             clear: both;
         }
     }
-    
+
     #multiorphan__out {
         min-height: 3em;
         text-overflow: ellipsis;
@@ -49,36 +47,36 @@
         overflow: hidden;
         max-width: 100%;
     }
-    
+
     .multiorphan__throbber, .multiorphan__throbber img {
         display: block;
         margin-left: auto;
         margin-right: auto;
     }
-    
+
     .multiorphan__result_group .header[count]:after {
         content: attr(count);
         float: right;
     }
-    
+
     .multiorphan__result {
-        
+
         padding: 0px;
         border-bottom: 1px solid @ini_border;
         overflow: hidden;
-        
+
         > div {
             padding: 0.5em 1em;
             background-color: #fefefe;
-                    
+
             &:nth-child(even) {
                 background-color: #efefef;
             }
-            
+
             &:hover {
                 background-color: fade(@ini_existing, 10%);
             }
-            
+
             &.deleted, &.deleted:hover {
                 background-color: fade(@ini_missing, 10%);
             }
@@ -87,19 +85,20 @@
                 background-color: fade(@ini_missing, 20%);
             }
         }
-        
+
         div.actions {
             float: right;
-            
+
             a {
                 padding: 0px 5px;
             }
         }
-            
+
         li {
-                
+
             position: relative;
-            
+            white-space: pre;
+
             div.actions:hover:before {
                 content: '';
                 position: absolute;
@@ -107,7 +106,7 @@
                 right: 0;
                 top: 0;
                 bottom: 0;
-                
+
                 background: fade(@ini_existing, 10%);
                 pointer-events: none;
             }
@@ -118,14 +117,14 @@
 #multiorphan__errorlog {
     overflow: auto;
     max-height: 200px;
-    
+
     p {
         color: #a00;
         margin: 0px;
         padding: 0px 5px;
         overflow: hidden;
         background-color: #FFEDED;
-        
+
         &:nth-child(even) {
             background-color: #FFD4D4;
         }
@@ -149,20 +148,20 @@
 }
 
 #multiorphan__preview_dialog {
-    
+
     ul.tabs, ul.actions {
         display: none;
     }
-    
+
     div.panelContent > * {
         float: left;
     }
-    
+
     div.panelContent .image {
         min-width: 100px;
         min-height: 100px;
     }
-    
+
     div.panelContent .image img {
         margin: 0 auto;
     }
