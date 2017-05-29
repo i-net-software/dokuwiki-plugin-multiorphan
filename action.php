@@ -131,8 +131,13 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             
             case 'viewPage' : {
 
-                list($link, $hash) = explode('#', $INPUT->str('link'));
-                $result = array('link' => wl($link) . (!empty($hash)?'#'.$hash:'') );
+                list($link, $hash) = explode('#', $INPUT->str('link'), 2);
+                if ( !empty( $hash) ) {
+                    $this->_init_renderer();
+                    $hash = '#' . $this->renderer->_headerToLink( $hash );
+                }
+                
+                $result = array('link' => wl($link) . $hash );
                 break;
             }
             
@@ -238,7 +243,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             return ($hid == $check);
         });
     
-        $data['entryID'] = $data['pageID'] . '#' . $check;
         $data['exists'] = count($result) > 0;
     }
 
