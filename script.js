@@ -151,8 +151,9 @@
     /**
      * Add an entry to the accordion of the according type.
      */
-    var addGUIEntry = function($insertPoint, id, name, requestPage, actions) {
+    var addGUIEntry = function($insertPoint, name, requestPage, actions) {
 
+        var id = encodeURIComponent(name);
         var $header = $insertPoint.prev('.header');
         $header.attr('count', parseInt($header.attr('count')||0)+1);
 
@@ -178,17 +179,17 @@
         // Fill the $currentResults object with information.
         var checkResponse = function( name, amount, object, $output, actions ) {
 
-            var id = encodeURIComponent(name);
-            var checkPoint  = amount == 0 ? object.wanted : object.linked;
-            if ( !Array.isArray(checkPoint[id]) ) {
-                checkPoint[id] = [];
+            var checkId = name.split( '#', 2 ).pop();
+            var checkPoint = amount == 0 ? object.wanted : object.linked;
+            if ( !Array.isArray(checkPoint[checkId]) ) {
+                checkPoint[checkId] = [];
             }
 
-            if ( checkPoint[id].indexOf(requestPage) == -1 ) {
-                checkPoint[id].push(requestPage);
+            if ( checkPoint[checkId].indexOf(requestPage) == -1 ) {
+                checkPoint[checkId].push(requestPage);
             }
 
-            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), id, name, requestPage, actions);
+            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), name, requestPage, actions);
         };
 
         var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
