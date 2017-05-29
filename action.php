@@ -238,7 +238,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             return ($hid == $check);
         });
     
-        $data['entryID'] = $data['pageID'] . '#' . $data['entryID'];
+        $data['entryID'] = $data['pageID'] . '#' . $check;
         $data['exists'] = count($result) > 0;
     }
 
