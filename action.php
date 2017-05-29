@@ -238,11 +238,12 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 return false;
             }
     
-            $hid = $renderer->_headerToLink( $input[1][0], true);
-            $check = $renderer->_headerToLink( $data['entryID'], false);
+            $hid = $renderer->_headerToLink( $input[1][0] );
+            $check = $renderer->_headerToLink( $data['entryID'] );
+
             return ($hid == $check);
         });
-    
+
         $data['exists'] = count($result) > 0;
     }
 
