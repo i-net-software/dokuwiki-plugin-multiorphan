@@ -13,7 +13,7 @@ if(!defined('DOKU_INC')) {
 
 class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
-    private $checkInstructions = array('plugin', 'externallink', 'interwikilink');
+    private $checkInstructions = array('plugin', 'externallink', 'interwikilink', 'locallink');
     private $pagesInstructions = array('internallink', 'camelcaselink');
     private $mediaInstructions = array('internalmedia');
 
@@ -130,9 +130,9 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             }
             
             case 'viewPage' : {
-                
-                $link = $INPUT->str('link');
-                $result = array('link' => wl($link));
+
+                list($link, $hash) = explode('#', $INPUT->str('link'));
+                $result = array('link' => wl($link) . (!empty($hash)?'#'.$hash:'') );
                 break;
             }
             
@@ -174,13 +174,13 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $instructions = p_cached_instructions($file, false, $id);
         $links        = array();
         $cns          = getNS($id);
-        $exists       = false;
+        // $exists       = false;
 
         if (!is_array($instructions)) { return $links; }
         foreach ($instructions as $ins) {
 
             $data = array(
-                
+                'pageID' => $id,
                 'instructions' => $ins[1],
                 'checkNamespace' => $cns,
                 'entryID' => $ins[1][0],
@@ -194,7 +194,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
             // If prevented, this is definitely an orphan.
             if (!is_null($data['type']) || (in_array($ins[0], $this->checkInstructions) && $evt->advise_before())) {
-                list($mid) = explode('#', $data['entryID']); //record pages without hashs
+                list($mid, $hash) = explode('#', $data['entryID']); //record pages without hashs
                 list($mid) = explode('?', $mid); //record pages without question mark
                 if (!is_bool($data['exists']) && $data['type'] == 'media') {
                     resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
@@ -202,7 +202,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     resolve_pageid($data['checkNamespace'], $mid, $data['exists']);
                 }
 
-                $links[$data['type']][$mid] += (is_bool($data['exists']) && $data['exists']) || $exists ? 1 : 0;
+                $links[$data['type']][$mid . (!empty($hash)?'#'.$hash:'')] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
             }
 
             unset($evt);
@@ -219,6 +219,27 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $instructions = $event->data['instructions'];
         switch( $event->data['syntax'] ) {
 
+            case 'locallink': {
+                $this->_init_renderer();
+                $exists = false;
+                $renderer = &$this->renderer;
+                $data = &$event->data;
+                $data['type'] = 'pages';
+                $instructions = p_cached_instructions(wikiFN($event->data['pageID']), false, $event->data['pageID']);
+                $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
+                    // Closure requires PHP >= 5.3
+                    if ( $input[0] != 'header' ) {
+                        return false;
+                    }
+
+                    $hid = $renderer->_headerToLink( $input[1][0], true);
+                    $check = $renderer->_headerToLink( $data['entryID'], false);
+                    return ($hid == $check);
+                });
+
+                $data['entryID'] = $data['pageID'] . '#' . $data['entryID'];
+                $data['exists'] = count($result) > 0;
+            }
             case 'interwikilink': {
                 
                 if ( ! $this->checkExternal ) { return false; }
@@ -276,7 +297,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             return;
         }
 
-        $this->renderer = new Doku_Renderer();
+        $this->renderer = new Doku_Renderer_xhtml();
         $this->renderer->interwiki = getInterwiki();
     }
 
