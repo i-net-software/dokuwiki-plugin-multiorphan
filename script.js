@@ -11,7 +11,7 @@
                 label: 'View',
                 click: function() {
                     var $link = jQuery(this);
-                    request({'do':'view'+type, 'link':$link.attr('elementid')}, function(response){
+                    request({'do':'view'+type, 'link':decodeURIComponent($link.attr('elementid'))}, function(response){
 
                         if ( response.dialogContent ) {
                             jQuery('<div/>').attr('id', 'multiorphan__preview_dialog').appendTo('body').dialog({
@@ -151,14 +151,14 @@
     /**
      * Add an entry to the accordion of the according type.
      */
-    var addGUIEntry = function($insertPoint, id, requestPage, actions) {
+    var addGUIEntry = function($insertPoint, id, name, requestPage, actions) {
 
         var $header = $insertPoint.prev('.header');
         $header.attr('count', parseInt($header.attr('count')||0)+1);
 
         var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"] > ul');
         if ( !$appendTo.length ) {
-            var $wrapper = jQuery('<div/>').addClass('entry').attr('elementid', id).append(jQuery('<span/>').text(id)).appendTo($insertPoint);
+            var $wrapper = jQuery('<div/>').addClass('entry').attr('elementid', id).append(jQuery('<span/>').text(name)).appendTo($insertPoint);
             guiElementActions(actions, id, $wrapper);
 
             $appendTo = jQuery('<ul/>').appendTo($wrapper);
@@ -176,8 +176,9 @@
     var checkResponseForWantedAndLinked = function(response, requestPage) {
 
         // Fill the $currentResults object with information.
-        var checkResponse = function( id, amount, object, $output, actions ) {
+        var checkResponse = function( name, amount, object, $output, actions ) {
 
+            var id = encodeURIComponent(name);
             var checkPoint  = amount == 0 ? object.wanted : object.linked;
             if ( !Array.isArray(checkPoint[id]) ) {
                 checkPoint[id] = [];
@@ -187,7 +188,7 @@
                 checkPoint[id].push(requestPage);
             }
 
-            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), id, requestPage, actions);
+            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), id, name, requestPage, actions);
         };
 
         var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
