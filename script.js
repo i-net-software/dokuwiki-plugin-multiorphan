@@ -179,7 +179,7 @@
         // Fill the $currentResults object with information.
         var checkResponse = function( name, amount, object, $output, actions ) {
 
-            var checkId = name.split( '#', 2 ).pop();
+            var checkId = name.split( '#', 2 ).shift();
             var checkPoint = amount == 0 ? object.wanted : object.linked;
             if ( !Array.isArray(checkPoint[checkId]) ) {
                 checkPoint[checkId] = [];
@@ -256,7 +256,7 @@
      */
     var request = function(data, success) {
         data['ns']     = $orphanForm.find('input[name=ns]').val();
-        data['filter']     = $orphanForm.find('input[name=filter]').val();
+        data['filter'] = $orphanForm.find('input[name=filter]').val();
         data['sectok'] = $orphanForm.find('input[name=sectok]').val();
 
         if ( $orphanForm.find('input[name=purge]').is(':checked') ) {
