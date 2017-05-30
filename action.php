@@ -227,6 +227,17 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         return $links;
     }
     
+    private function _plugin_input_to_header( &$input ) {
+        
+        switch( $input[1][0] ) {
+            case 'box2':
+                if ( $input[1][1][0] == 'title' ) {
+                    $input = array( 'header', array( $input[1][1][1]) );
+                }
+                break;
+        }
+    }
+
     private function _check_locallink( &$data ) {
         $this->_init_renderer();
         $renderer = &$this->renderer;
@@ -234,10 +245,15 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $instructions = p_cached_instructions(wikiFN($data['pageID']), false, $data['pageID']);
         $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
             // Closure requires PHP >= 5.3
+
+            if ( $input[0] == 'plugin' ) {
+                $this->_plugin_input_to_header( $input );
+            }
+
             if ( $input[0] != 'header' ) {
                 return false;
             }
-    
+
             $hid = $renderer->_headerToLink( $input[1][0] );
             $check = $renderer->_headerToLink( $data['entryID'] );
 
