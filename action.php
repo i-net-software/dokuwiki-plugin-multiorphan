@@ -227,31 +227,48 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         return $links;
     }
     
-    private function _plugin_input_to_header( &$input ) {
-        
+    private function _plugin_input_to_header( &$input, &$data ) {
+
+        // print_r($input);
         switch( $input[1][0] ) {
             case 'box2':
                 if ( $input[1][1][0] == 'title' ) {
                     $input = array( 'header', array( $input[1][1][1]) );
                 }
                 break;
+            case 'include_include':
+                // Get included instructions
+                $plugin = plugin_load('syntax', 'include_include');
+                if($plugin != null) {
+                    $plugin->render($this->renderer->getFormat(), $this->renderer, $input[1][1]);
+                }
+
+                $instructions = $this->renderer->instructions;
+                $this->renderer->nest_close();
+                $this->_check_locallink( $data, $instructions);
+                break;
         }
     }
 
-    private function _check_locallink( &$data ) {
+    private function _check_locallink( &$data, $instructions = null ) {
         $this->_init_renderer();
         $renderer = &$this->renderer;
         $data['type'] = 'pages';
-        $instructions = p_cached_instructions(wikiFN($data['pageID']), false, $data['pageID']);
+        $data['exists'] = false;
+
+        if ( is_null($instructions) ) {
+            $instructions = p_cached_instructions(wikiFN($data['pageID']), false, $data['pageID']);
+        }
+
         $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
             // Closure requires PHP >= 5.3
 
             if ( $input[0] == 'plugin' ) {
-                $this->_plugin_input_to_header( $input );
+                $this->_plugin_input_to_header( $input, $data );
             }
 
             if ( $input[0] != 'header' ) {
-                return false;
+                return $data['exists'];
             }
 
             $hid = $renderer->_headerToLink( $input[1][0] );
@@ -260,7 +277,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             return ($hid == $check);
         });
 
-        $data['exists'] = count($result) > 0;
+        $data['exists'] = $data['exists'] || count($result) > 0;
     }
 
     /**
@@ -268,6 +285,8 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
      */
     public function handle_unknown_instructions(Doku_Event &$event) {
 
+        //print "Beginn:\n";
+        //print_r($event->data);
         $instructions = $event->data['instructions'];
         switch( $event->data['syntax'] ) {
 
@@ -331,7 +350,8 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             return;
         }
 
-        $this->renderer = new Doku_Renderer_xhtml();
+        @include_once( dirname( __FILE__ ) .  "/inc/MultiOrphanDummyRenderer.php");
+        $this->renderer = new MultiOrphanDummyRenderer();
         $this->renderer->interwiki = getInterwiki();
     }
 
