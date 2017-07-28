@@ -177,7 +177,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         
         $file         = wikiFN($id);
         $instructions = p_cached_instructions($file, false, $id);
-        $links        = array();
+        $links        = array('pages' => [], 'media' => []);
         $cns          = getNS($id);
         // $exists       = false;
 
@@ -188,7 +188,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 'pageID' => $id,
                 'instructions' => $ins[1],
                 'checkNamespace' => $cns,
-                'entryID' => $ins[1][0],
+                'entryID' => !empty($ins[1][0]) ? $ins[1][0] : null,
                 'syntax' => $ins[0],
                 'type' => $this->getInternalMediaType($ins[0]),
                 'exists' => null,
@@ -199,7 +199,11 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
             // If prevented, this is definitely an orphan.
             if (!is_null($data['type']) || (in_array($ins[0], $this->checkInstructions) && $evt->advise_before())) {
-                list($mid, $hash) = explode('#', $data['entryID']); //record pages without hashs
+                $mid = $data['entryID'];
+                $hash = null;
+                if (strpos($mid, '#') !== false) {
+                    list($mid, $hash) = explode('#', $mid); //record pages without hashs
+                }
                 list($mid) = explode('?', $mid); //record pages without question mark
                 if (!is_bool($data['exists']) && $data['type'] == 'media') {
                     resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
@@ -218,7 +222,11 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     }
                 }
 
-                $links[$data['type']][$mid . (!empty($hash)?'#'.$hash:'')] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
+                $itemIndex = $mid . (!empty($hash) ? '#'.$hash : '');
+                if (!isset($links[$data['type']][$itemIndex])) {
+                    $links[$data['type']][$itemIndex] = 0;
+                }
+                $links[$data['type']][$itemIndex] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
             }
 
             unset($evt);
