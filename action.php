@@ -104,7 +104,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             
             case 'deletePage' : {
                 
-                $link = $INPUT->str('link');
+                $link = urldecode($INPUT->str('link'));
                 saveWikiText($link, '', "Remove page via multiORPHANS");
                 break;
             }
@@ -143,7 +143,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             
             case 'deleteMedia' : {
                 
-                $link = $INPUT->str('link');
+                $link = urldecode($INPUT->str('link'));
                 $status = media_delete($link, $AUTH);
                 break;
             }
