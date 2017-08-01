@@ -166,7 +166,8 @@
         }
 
         if ( requestPage && requestPage.length ) {
-            var $entry = jQuery('<li/>').addClass('requestPage').text(requestPage).appendTo($appendTo);
+            var $pageId = jQuery('<span>').text(requestPage);
+            var $entry = jQuery('<li>').addClass('requestPage').append($pageId).appendTo($appendTo);
             guiElementActions(actions, requestPage, $entry);
         }
     };

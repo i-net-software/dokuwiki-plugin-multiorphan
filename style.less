@@ -69,6 +69,12 @@
             padding: 0.5em 1em;
             background-color: #fefefe;
 
+            > span {
+                display: inline-block;
+                width: 80%;
+                word-break: break-all;
+            }
+
             &:nth-child(even) {
                 background-color: #efefef;
             }
@@ -94,9 +100,14 @@
             }
         }
 
-        li {
-
+        li.requestPage {
             position: relative;
+
+            > span {
+                display: inline-block;
+                width: 80%;
+                vertical-align: text-top;
+            }
 
             div.actions:hover:before {
                 content: '';
