@@ -317,11 +317,12 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 switch( $instructions[0] ) {
                     case 'include_include':
                         $event->data['entryID'] = $instructions[1][1];
-                        $event->data['type'] = 'page';
+                        $event->data['type'] = 'pages';
                         return true;
                     case 'imagemapping':
                         $event->data['type'] = $this->getInternalMediaType($instructions[1][1]);
                         $event->data['entryID'] = $instructions[1][2];
+                        $event->data['type'] = 'pages';
                         return true;
                     case 'mp3play':
                         $event->data['entryID'] = $instructions[1]['mp3'];
