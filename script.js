@@ -12,7 +12,7 @@
                 actionId: 'view',
                 click: function() {
                     var $link = jQuery(this);
-                    if (type === 'Page') {
+                    if (type === 'Page' || type === 'URL') {
                         return true;
                     }
                     request({'do':'view'+type, 'link':decodeURIComponent($link.attr('elementid'))}, function(response){
@@ -137,6 +137,20 @@
         validateElement();
     };
 
+    var buildUrl = function (id) {
+        var cleanedID = decodeURIComponent(id);
+        var schemeSepPos = cleanedID.indexOf('://');
+        if (schemeSepPos > -1) {
+            var scheme = cleanedID.substr(0, schemeSepPos);
+            if (JSINFO.schemes.indexOf(scheme) > -1) {
+                // we have an external url
+                return cleanedID;
+            }
+        }
+
+        return DOKU_BASE + 'doku.php?id=' + id;
+    };
+
     var guiElementActions = function(actions, id, $insertPoint) {
 
         // Add actions
@@ -147,7 +161,7 @@
                 elementid: id,
             };
             if (action.actionId === 'view') {
-                attrs.href = DOKU_BASE + 'doku.php?id=' + id;
+                attrs.href = buildUrl(id);
                 attrs.target = '_blank';
             }
             var $link = jQuery('<a>').attr(attrs).text(action.label).appendTo($buttonSet).click(action.click);
