@@ -13,7 +13,7 @@ if(!defined('DOKU_INC')) {
 
 class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
-    private $checkInstructions = array('plugin', 'externallink', 'interwikilink', 'locallink');
+    private $checkInstructions = array('plugin', 'externallink', 'interwikilink', 'locallink', 'windowssharelink');
     private $pagesInstructions = array('internallink', 'camelcaselink');
     private $mediaInstructions = array('internalmedia');
 
@@ -311,6 +311,14 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 $data = $this->httpClient->get( $event->data['entryID'] );
                 $event->data['exists'] = $this->httpClient->status == 200;
                 $event->data['type'] = 'urls';
+                return true;
+            }
+            case 'windowssharelink': {
+                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                    return false;
+                }
+                $event->data['exists'] = file_exists($event->data['entryID']);
+                $event->data['type'] = 'media';
                 return true;
             }
             case 'plugin': {
