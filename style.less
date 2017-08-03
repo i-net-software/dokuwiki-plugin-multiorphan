@@ -10,7 +10,7 @@
     fieldset {
 
         text-align: left;
-        min-width: 0; // this makes the fieldset behave correctly.
+        min-width: 60%; // this makes the fieldset behave correctly.
 
         label {
 
@@ -69,6 +69,12 @@
             padding: 0.5em 1em;
             background-color: #fefefe;
 
+            > span {
+                display: inline-block;
+                width: 80%;
+                word-break: break-all;
+            }
+
             &:nth-child(even) {
                 background-color: #efefef;
             }
@@ -94,10 +100,14 @@
             }
         }
 
-        li {
-
+        li.requestPage {
             position: relative;
-            white-space: pre;
+
+            > span {
+                display: inline-block;
+                width: 80%;
+                vertical-align: text-top;
+            }
 
             div.actions:hover:before {
                 content: '';
