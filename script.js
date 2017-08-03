@@ -9,8 +9,12 @@
         view : function(type) {
             return {
                 label: 'View',
+                actionId: 'view',
                 click: function() {
                     var $link = jQuery(this);
+                    if (type === 'Page' || type === 'URL') {
+                        return true;
+                    }
                     request({'do':'view'+type, 'link':decodeURIComponent($link.attr('elementid'))}, function(response){
 
                         if ( response.dialogContent ) {
@@ -25,9 +29,6 @@
                                     jQuery(this).dialog('close').remove();
                                 } 
                             }).html(response.dialogContent);
-                        } else if ( response.link ) {
-                            var win = window.open(response.link, '_blank');
-                            win.focus();
                         }
                     });
                     return false;
@@ -136,12 +137,34 @@
         validateElement();
     };
 
+    var buildUrl = function (id) {
+        var cleanedID = decodeURIComponent(id);
+        var schemeSepPos = cleanedID.indexOf('://');
+        if (schemeSepPos > -1) {
+            var scheme = cleanedID.substr(0, schemeSepPos);
+            if (JSINFO.schemes.indexOf(scheme) > -1) {
+                // we have an external url
+                return cleanedID;
+            }
+        }
+
+        return DOKU_BASE + 'doku.php?id=' + id;
+    };
+
     var guiElementActions = function(actions, id, $insertPoint) {
 
         // Add actions
         var $buttonSet = jQuery('<div/>').addClass('actions').appendTo($insertPoint);
         jQuery.each(actions||[], function(idx, action) {
-            var $link = jQuery('<a href=""/>').attr('elementid', id).text(action.label).appendTo($buttonSet).click(action.click);
+            const attrs = {
+                href: '',
+                elementid: id,
+            };
+            if (action.actionId === 'view') {
+                attrs.href = buildUrl(id);
+                attrs.target = '_blank';
+            }
+            var $link = jQuery('<a>').attr(attrs).text(action.label).appendTo($buttonSet).click(action.click);
             if ( action.process ) {
                 action.process($link);
             }
@@ -167,7 +190,7 @@
 
         if ( requestPage && requestPage.length ) {
             var $entry = jQuery('<li/>').addClass('requestPage').text(requestPage).appendTo($appendTo);
-            guiElementActions(actions, requestPage, $entry);
+            guiElementActions([ORPHANACTIONS.view('Page')], requestPage, $entry);
         }
     };
 

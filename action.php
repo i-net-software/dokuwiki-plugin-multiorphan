@@ -31,7 +31,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handle_ajax_call_unknown');
         $controller->register_hook('MULTIORPHAN_INSTRUCTION_LINKED', 'BEFORE', $this, 'handle_unknown_instructions');
-   
+        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'extend_JSINFO');
     }
 
     /**
@@ -343,6 +343,11 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         }
 
         return false;
+    }
+
+    public function extend_JSINFO($event, $param) {
+        global $JSINFO;
+        $JSINFO['schemes'] = array_values(getSchemes());
     }
 
     private function _init_http_client() {
