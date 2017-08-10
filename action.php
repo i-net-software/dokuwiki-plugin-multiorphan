@@ -178,7 +178,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $file         = wikiFN($id);
         $instructions = p_cached_instructions($file, false, $id);
         $links        = array('pages' => [], 'media' => []);
-        // $exists       = false;
 
         $this->walk_instructions( $links, $id, $instructions );
         return $links;
