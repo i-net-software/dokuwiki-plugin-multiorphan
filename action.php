@@ -181,8 +181,21 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $cns          = getNS($id);
         // $exists       = false;
 
-        if (!is_array($instructions)) { return $links; }
+        $this->walk_instructions( $links, $instructions );
+        return $links;
+    }
+    
+    private function walk_instructions( &$links, $instructions ) {
+
+        if (!is_array($instructions)) {
+            return;
+        }
         foreach ($instructions as $ins) {
+
+            if ($ins[0] == 'nest' ) {
+                $this->walk_instructions( $links, $ins[1][0] );
+                continue;
+            }
 
             $data = array(
                 'pageID' => $id,
@@ -232,7 +245,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             unset($evt);
 
         }
-        return $links;
     }
     
     private function _plugin_input_to_header( &$input, &$data ) {
@@ -263,27 +275,30 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         $renderer = &$this->renderer;
         $data['type'] = 'pages';
         $data['exists'] = false;
+        $result = array();
 
         if ( is_null($instructions) ) {
             $instructions = p_cached_instructions(wikiFN($data['pageID']), false, $data['pageID']);
         }
 
-        $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
-            // Closure requires PHP >= 5.3
-
-            if ( $input[0] == 'plugin' ) {
-                $this->_plugin_input_to_header( $input, $data );
-            }
-
-            if ( $input[0] != 'header' ) {
-                return $data['exists'];
-            }
-
-            $hid = $renderer->_headerToLink( $input[1][0] );
-            $check = $renderer->_headerToLink( $data['entryID'] );
-
-            return ($hid == $check);
-        });
+        if ( !is_null($instructions) ) {
+            $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
+                // Closure requires PHP >= 5.3
+    
+                if ( $input[0] == 'plugin' ) {
+                    $this->_plugin_input_to_header( $input, $data );
+                }
+    
+                if ( $input[0] != 'header' ) {
+                    return $data['exists'];
+                }
+    
+                $hid = $renderer->_headerToLink( $input[1][0] );
+                $check = $renderer->_headerToLink( $data['entryID'] );
+    
+                return ($hid == $check);
+            });
+        }
 
         $data['exists'] = $data['exists'] || count($result) > 0;
     }
