@@ -1,6 +1,6 @@
 
 // multiorphan Admin Plugin Script
-(function(){
+(function($){
 
     var canBeStopped = false, $orphanForm = null, $currentPagesAndMedia, $currentResults;
 
@@ -11,22 +11,22 @@
                 label: 'View',
                 actionId: 'view',
                 click: function() {
-                    var $link = jQuery(this);
+                    var $link = $(this);
                     if (type === 'Page' || type === 'URL') {
                         return true;
                     }
                     request({'do':'view'+type, 'link':decodeURIComponent($link.attr('elementid'))}, function(response){
 
                         if ( response.dialogContent ) {
-                            jQuery('<div/>').attr('id', 'multiorphan__preview_dialog').appendTo('body').dialog({
+                            $('<div/>').attr('id', 'multiorphan__preview_dialog').appendTo('body').dialog({
                                 title:'Preview',
-                                height: Math.min(700,jQuery(window).height()-50),
-                                width: Math.min(700,jQuery(window).width()-50),
+                                height: Math.min(700,$(window).height()-50),
+                                width: Math.min(700,$(window).width()-50),
                                 autoOpen:true,
                                 closeOnEscape:true,
                                 modal:true,
                                 close: function() { 
-                                    jQuery(this).dialog('close').remove();
+                                    $(this).dialog('close').remove();
                                 } 
                             }).html(response.dialogContent);
                         }
@@ -40,7 +40,7 @@
             return {
                 label: 'Delete',
                 click: function() {
-                    var $link = jQuery(this);
+                    var $link = $(this);
                     request({'do':'delete'+type , 'link':$link.attr('elementid')}, function(response){
                         $link.parents('.entry[elementid="'+$link.attr('elementid')+'"]').addClass('deleted disabled');
                         $link.parent('.actions').remove();
@@ -53,7 +53,7 @@
     };
 
     var init = function() {
-        $orphanForm = jQuery('form#multiorphan').submit(loadpages);
+        $orphanForm = $('form#multiorphan').submit(loadpages);
         $orphanForm.find( ".multiorphan__result_group" ).accordion({
             collapsible: true,
             active: false,
@@ -85,7 +85,7 @@
             // Start cycling pages
             $currentPagesAndMedia = $result;
             $currentPagesAndMedia.interval = 1;//Math.floor($currentPagesAndMedia.pages.length / 10);
-            checkpagesandmedia(jQuery.makeArray($result.pages));
+            checkpagesandmedia($.makeArray($result.pages));
         });
 
         return false;
@@ -154,8 +154,8 @@
     var guiElementActions = function(actions, id, $insertPoint) {
 
         // Add actions
-        var $buttonSet = jQuery('<div/>').addClass('actions').appendTo($insertPoint);
-        jQuery.each(actions||[], function(idx, action) {
+        var $buttonSet = $('<div/>').addClass('actions').appendTo($insertPoint);
+        $.each(actions||[], function(idx, action) {
             const attrs = {
                 href: '',
                 elementid: id,
@@ -164,7 +164,7 @@
                 attrs.href = buildUrl(id);
                 attrs.target = '_blank';
             }
-            var $link = jQuery('<a>').attr(attrs).text(action.label).appendTo($buttonSet).click(action.click);
+            var $link = $('<a>').attr(attrs).text(action.label).appendTo($buttonSet).click(action.click);
             if ( action.process ) {
                 action.process($link);
             }
@@ -182,15 +182,16 @@
 
         var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"] > ul');
         if ( !$appendTo.length ) {
-            var $wrapper = jQuery('<div/>').addClass('entry').attr('elementid', id).append(jQuery('<span/>').text(name)).appendTo($insertPoint);
+            var $wrapper = $('<div/>').addClass('entry').attr('elementid', id).append($('<span/>').text(name)).appendTo($insertPoint);
             guiElementActions(actions, id, $wrapper);
 
-            $appendTo = jQuery('<ul/>').appendTo($wrapper);
+            $appendTo = $('<ul/>').appendTo($wrapper);
+            $appendTo
         }
 
         if ( requestPage && requestPage.length ) {
-            var $pageId = jQuery('<span>').text(requestPage);
-            var $entry = jQuery('<li>').addClass('requestPage').append($pageId).appendTo($appendTo);
+            var $pageId = $('<span>').text(requestPage);
+            var $entry = $('<li>').addClass('requestPage').append($pageId).appendTo($appendTo);
             guiElementActions(actions, requestPage, $entry);
         }
     };
@@ -218,13 +219,13 @@
 
         var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
         var $mediaOut = $orphanForm.find('.multiorphan__result_group.media');
-        jQuery.each((response||{}).pages||[], function(page, amount){
+        $.each((response||{}).pages||[], function(page, amount){
             checkResponse(page, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('Page')]);
         });
-        jQuery.each((response||{}).urls||[], function(page, amount){
+        $.each((response||{}).urls||[], function(page, amount){
             checkResponse(page, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('URL')]);
         });
-        jQuery.each((response||{}).media||[], function(media, amount){
+        $.each((response||{}).media||[], function(media, amount){
             checkResponse(media, amount, $currentResults.media, $mediaOut, [ORPHANACTIONS.view('Media')]);
         });
     };
@@ -239,9 +240,9 @@
         var orphaned = function(linked, original) {
 
             if ( !original || !original.length ) return [];
-            var orphaned = jQuery.makeArray(original); // make copy
+            var orphaned = $.makeArray(original); // make copy
 
-            jQuery.each(linked, function(link) {
+            $.each(linked, function(link) {
                 if ( (idx = orphaned.indexOf(link)) > -1 ) {
                     orphaned.splice(idx, 1);
                 }
@@ -261,15 +262,15 @@
 
         if ( processCompleted == true ) {
             $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').html('');
-            jQuery.each($currentResults.pages.orphan, function(idx, orphan){
+            $.each($currentResults.pages.orphan, function(idx, orphan){
                 addGUIEntry($pagesOut, orphan, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
             });        
 
-            jQuery.each($currentResults.media.orphan, function(idx, orphan){
+            $.each($currentResults.media.orphan, function(idx, orphan){
                 addGUIEntry($mediaOut, orphan, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
             });        
         } else {
-            $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').append(jQuery('<div/>').html(getLang('please-wait-orphan')));
+            $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').append($('<div/>').html(getLang('please-wait-orphan')));
             $pagesOut.prev('.header').attr('count', $currentResults.pages.orphan.length);
             $mediaOut.prev('.header').attr('count', $currentResults.media.orphan.length);
         }
@@ -295,7 +296,7 @@
         data['call']   = 'multiorphan';
 
         throbber(true);
-        return jQuery.post(DOKU_BASE + 'lib/exe/ajax.php', data, handleResponse(success)).always(function(){
+        return $.post(DOKU_BASE + 'lib/exe/ajax.php', data, handleResponse(success)).always(function(){
             throbber(false);
         });
     };
@@ -309,7 +310,7 @@
             // Check for errors
             var $result;
             try {
-                $result = jQuery.parseJSON(response);
+                $result = $.parseJSON(response);
             } catch( e ) {
                 throbber(false);
                 return errorLog( getLang('error-parsing') + "\n" + response + "\n\n" + e );
@@ -329,7 +330,7 @@
      * Set text for status
      */
     var status = function(text) {
-        jQuery('#multiorphan__out').html(text).removeClass('error');
+        $('#multiorphan__out').html(text).removeClass('error');
     };
 
     /**
@@ -341,8 +342,8 @@
             return;
         }
 
-        if (!jQuery('#multiorphan__errorlog').size()) {
-            jQuery('#multiorphan__out').parent().append(jQuery('<div id="multiorphan__errorlog"/>'));
+        if (!$('#multiorphan__errorlog').size()) {
+            $('#multiorphan__out').parent().append($('<div id="multiorphan__errorlog"/>'));
         }
 
         var msg = text.split("\n");
@@ -355,12 +356,12 @@
                 continue;
             }
 
-            jQuery('#multiorphan__errorlog').append(jQuery('<p/>').text(txtMsg.replace(new RegExp("</?.*?>", "ig"), "")));
+            $('#multiorphan__errorlog').append($('<p/>').text(txtMsg.replace(new RegExp("</?.*?>", "ig"), "")));
         }
     };
 
     var resetErrorLog = function() {
-        jQuery('#multiorphan__errorlog').remove();
+        $('#multiorphan__errorlog').remove();
     };
 
     /**
@@ -369,7 +370,7 @@
     var throbberCount = 0;
     var throbber = function(on) {
         throbberCount = Math.max(0, throbberCount + (on?1:-1));
-        jQuery('#multiorphan__throbber').css('visibility', throbberCount>0 ? 'visible' : 'hidden');
+        $('#multiorphan__throbber').css('visibility', throbberCount>0 ? 'visible' : 'hidden');
     };
 
     var reset = function(fullReset) {
@@ -407,5 +408,5 @@
         return LANG.plugins.multiorphan ? LANG.plugins.multiorphan[key] : key;
     };
 
-    jQuery(document).ready(init);
-})();
+    $(document).ready(init);
+})(jQuery);
