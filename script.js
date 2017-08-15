@@ -48,8 +48,18 @@
                     return false;
                 }
             }
-        }
+        },
 
+        clear: function() {
+            return {
+                label: 'Clear',
+                click: function() {
+                    var $link = $(this);
+                    $link.parents('.entry[elementid="'+$link.attr('elementid')+'"]').remove();
+                    return false;
+                }
+            }
+        }
     };
 
     var init = function() {
@@ -182,11 +192,12 @@
 
         var $appendTo = $insertPoint.find('.entry[elementid="'+id+'"] > ul');
         if ( !$appendTo.length ) {
-            var $wrapper = $('<div/>').addClass('entry').attr('elementid', id).append($('<span/>').text(name)).appendTo($insertPoint);
-            guiElementActions(actions, id, $wrapper);
+            var $wrapper = $('<div/>').addClass('entry').attr('elementid', id).appendTo($insertPoint);
+            $('<span/>').text(name).appendTo($wrapper);
+
+            guiElementActions(actions.concat([ORPHANACTIONS.clear()]), id, $wrapper);
 
             $appendTo = $('<ul/>').appendTo($wrapper);
-            $appendTo
         }
 
         if ( requestPage && requestPage.length ) {
