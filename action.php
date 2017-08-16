@@ -394,6 +394,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             case 'urls':
                 return $id;
             case 'media':
+                return  ml($id);
             default:
                 return null;
         }

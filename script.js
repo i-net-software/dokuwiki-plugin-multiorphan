@@ -89,7 +89,7 @@
         reset(true);
         canBeStopped = true;
         event.stopPropagation();
-        $orphanForm.find('button[type=submit]').val(getLang('stop'));
+        $orphanForm.find('button[type=submit]').text(getLang('stop'));
         request({'do':'loadpages'}, function( $result ){
 
             // Start cycling pages
@@ -233,11 +233,11 @@
         $.each((response||{}).pages||[], function(page, data){
             checkResponse(page, data.href, data.amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('Page')]);
         });
-        $.each((response||{}).urls||[], function(page, amount){
-            checkResponse(page, null, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('URL')]);
+        $.each((response||{}).urls||[], function(page, data){
+            checkResponse(page, data.href, data.amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('URL')]);
         });
-        $.each((response||{}).media||[], function(media, amount){
-            checkResponse(media, null, amount, $currentResults.media, $mediaOut, [ORPHANACTIONS.view('Media')]);
+        $.each((response||{}).media||[], function(media, data){
+            checkResponse(media, data.href, data.amount, $currentResults.media, $mediaOut, [ORPHANACTIONS.view('Media')]);
         });
     };
 
@@ -406,7 +406,7 @@
         $currentPagesAndMedia = {};
 
         throbber(false);
-        $orphanForm.find('button[type=submit]').val(getLang('start'));
+        $orphanForm.find('button[type=submit]').text(getLang('start'));
 
         if ( fullReset === true ) {
             resetErrorLog();
