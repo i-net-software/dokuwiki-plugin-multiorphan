@@ -89,7 +89,7 @@
         reset(true);
         canBeStopped = true;
         event.stopPropagation();
-        $orphanForm.find('input[type=submit]').val(getLang('stop'));
+        $orphanForm.find('button[type=submit]').val(getLang('stop'));
         request({'do':'loadpages'}, function( $result ){
 
             // Start cycling pages
@@ -406,7 +406,7 @@
         $currentPagesAndMedia = {};
 
         throbber(false);
-        $orphanForm.find('input[type=submit]').val(getLang('start'));
+        $orphanForm.find('button[type=submit]').val(getLang('start'));
 
         if ( fullReset === true ) {
             resetErrorLog();
