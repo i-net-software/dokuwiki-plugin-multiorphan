@@ -205,7 +205,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 if (strpos($mid, '#') !== false) {
                     list($mid, $hash) = explode('#', $mid); //record pages without hashs
                 }
-                list($mid) = explode('?', $mid); //record pages without question mark
+                //list($mid) = explode('?', $mid); //record pages without question mark
                 if (!is_bool($data['exists']) && $data['type'] == 'media') {
                     resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
                 } else if (!is_bool($data['exists'])) {
