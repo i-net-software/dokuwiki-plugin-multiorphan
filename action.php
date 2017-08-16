@@ -194,6 +194,12 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
             // If prevented, this is definitely an orphan.
             if (!is_null($data['type']) || (in_array($ins[0], $this->checkInstructions) && $evt->advise_before())) {
+
+                if (is_null($data['type'])) {
+                    // still not media type so ignore the entry.
+                    continue;
+                }
+
                 $mid = $data['entryID'];
                 $hash = null;
                 if (strpos($mid, '#') !== false) {
@@ -350,6 +356,13 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                         $event->data['entryID'] = $instructions[1]['mp3'];
                         $event->data['type'] = 'media';
                         return true;
+                    case 'imagebox':
+                        if ( $instructions[1][0] === 1 ) {
+                            $event->data['entryID'] = $instructions[1][1]['src'];
+                            $event->data['exists'] = $instructions[1][1]['exist'];
+                            $event->data['type'] = 'media';
+                            return true;
+                        }
                     default:
                         // print_r($instructions);
                 }
