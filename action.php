@@ -123,24 +123,6 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 }
             }
             
-            case 'viewURL' : {
-
-                $result = array('link' => $INPUT->str('link'));
-                break;
-            }
-            
-            case 'viewPage' : {
-
-                list($link, $hash) = explode('#', $INPUT->str('link'), 2);
-                if ( !empty( $hash) ) {
-                    $this->_init_renderer();
-                    $hash = '#' . $this->renderer->_headerToLink( $hash );
-                }
-                
-                $result = array('link' => wl($link) . $hash );
-                break;
-            }
-            
             case 'deleteMedia' : {
                 
                 $link = urldecode($INPUT->str('link'));
@@ -237,9 +219,12 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
                 $itemIndex = $mid . (!empty($hash) ? '#'.$hash : '');
                 if (!isset($links[$data['type']][$itemIndex])) {
-                    $links[$data['type']][$itemIndex] = 0;
+                    $links[$data['type']][$itemIndex] = array(
+                        'href' => $this->hrefForType( $data['type'], $itemIndex),
+                        'amount' => 0
+                    );
                 }
-                $links[$data['type']][$itemIndex] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
+                $links[$data['type']][$itemIndex]['amount'] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
             }
 
             unset($evt);
@@ -394,6 +379,24 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
     private function getInternalMediaType($ins) {
         return in_array($ins, $this->mediaInstructions) ? 'media' : (in_array($ins, $this->pagesInstructions) ? 'pages' : null);
+    }
+
+    private function hrefForType( $type, $id ) {
+        switch( $type ) {
+            case 'pages':
+                list($link, $hash) = explode('#', $id, 2);
+                if ( !empty( $hash) ) {
+                    $this->_init_renderer();
+                    $hash = '#' . $this->renderer->_headerToLink( $hash );
+                }
+                
+                return wl($link) . $hash;
+            case 'urls':
+                return $id;
+            case 'media':
+            default:
+                return null;
+        }
     }
 }
 

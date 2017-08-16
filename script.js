@@ -161,17 +161,17 @@
         return DOKU_BASE + 'doku.php?id=' + id;
     };
 
-    var guiElementActions = function(actions, id, $insertPoint) {
+    var guiElementActions = function(actions, id, url, $insertPoint) {
 
         // Add actions
         var $buttonSet = $('<div/>').addClass('actions').appendTo($insertPoint);
         $.each(actions||[], function(idx, action) {
             const attrs = {
-                href: '',
+                href: url || buildUrl(id),
                 elementid: id,
             };
+
             if (action.actionId === 'view') {
-                attrs.href = buildUrl(id);
                 attrs.target = '_blank';
             }
             var $link = $('<a>').attr(attrs).text(action.label).appendTo($buttonSet).click(action.click);
@@ -184,9 +184,9 @@
     /**
      * Add an entry to the accordion of the according type.
      */
-    var addGUIEntry = function($insertPoint, name, requestPage, actions) {
+    var addGUIEntry = function($insertPoint, name, url, requestPage, actions) {
 
-        var id = encodeURIComponent(name);
+        var id = encodeURIComponent(name)
         var $header = $insertPoint.prev('.header');
         $header.attr('count', parseInt($header.attr('count')||0)+1);
 
@@ -195,7 +195,7 @@
             var $wrapper = $('<div/>').addClass('entry').attr('elementid', id).appendTo($insertPoint);
             $('<span/>').text(name).appendTo($wrapper);
 
-            guiElementActions(actions.concat([ORPHANACTIONS.clear()]), id, $wrapper);
+            guiElementActions(actions.concat([ORPHANACTIONS.clear()]), id, url, $wrapper);
 
             $appendTo = $('<ul/>').appendTo($wrapper);
         }
@@ -203,7 +203,7 @@
         if ( requestPage && requestPage.length ) {
             var $pageId = $('<span>').text(requestPage);
             var $entry = $('<li>').addClass('requestPage').append($pageId).appendTo($appendTo);
-            guiElementActions(actions, requestPage, $entry);
+            guiElementActions(actions, requestPage, url, $entry);
         }
     };
 
@@ -213,7 +213,7 @@
     var checkResponseForWantedAndLinked = function(response, requestPage) {
 
         // Fill the $currentResults object with information.
-        var checkResponse = function( name, amount, object, $output, actions ) {
+        var checkResponse = function( name, url, amount, object, $output, actions ) {
 
             var checkId = name.split( '#', 2 ).shift();
             var checkPoint = amount == 0 ? object.wanted : object.linked;
@@ -225,19 +225,19 @@
                 checkPoint[checkId].push(requestPage);
             }
 
-            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), name, requestPage, actions);
+            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), name, url, requestPage, actions);
         };
 
         var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
         var $mediaOut = $orphanForm.find('.multiorphan__result_group.media');
-        $.each((response||{}).pages||[], function(page, amount){
-            checkResponse(page, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('Page')]);
+        $.each((response||{}).pages||[], function(page, data){
+            checkResponse(page, data.href, data.amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('Page')]);
         });
         $.each((response||{}).urls||[], function(page, amount){
-            checkResponse(page, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('URL')]);
+            checkResponse(page, null, amount, $currentResults.pages, $pagesOut, [ORPHANACTIONS.view('URL')]);
         });
         $.each((response||{}).media||[], function(media, amount){
-            checkResponse(media, amount, $currentResults.media, $mediaOut, [ORPHANACTIONS.view('Media')]);
+            checkResponse(media, null, amount, $currentResults.media, $mediaOut, [ORPHANACTIONS.view('Media')]);
         });
     };
 
@@ -274,11 +274,11 @@
         if ( processCompleted == true ) {
             $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').html('');
             $.each($currentResults.pages.orphan, function(idx, orphan){
-                addGUIEntry($pagesOut, orphan, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
+                addGUIEntry($pagesOut, orphan, null, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
             });        
 
             $.each($currentResults.media.orphan, function(idx, orphan){
-                addGUIEntry($mediaOut, orphan, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
+                addGUIEntry($mediaOut, orphan, null, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
             });        
         } else {
             $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').append($('<div/>').html(getLang('please-wait-orphan')));
