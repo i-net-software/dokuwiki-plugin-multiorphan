@@ -224,6 +224,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                         'amount' => 0
                     );
                 }
+
                 $links[$data['type']][$itemIndex]['amount'] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
             }
 
@@ -336,9 +337,14 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                         $event->data['type'] = 'pages';
                         return true;
                     case 'imagemapping':
-                        $event->data['type'] = $this->getInternalMediaType($instructions[1][1]);
-                        $event->data['entryID'] = $instructions[1][2];
-                        $event->data['type'] = 'pages';
+                        if ( $instructions[1][1] == 'area' ) {
+                            $event->data['type'] = $this->getInternalMediaType($instructions[1][4]);
+                            $event->data['entryID'] = $instructions[1][6];
+                        } else 
+                        {
+                            $event->data['type'] = $this->getInternalMediaType($instructions[1][1]);
+                            $event->data['entryID'] = $instructions[1][2];
+                        }
                         return true;
                     case 'mp3play':
                         $event->data['entryID'] = $instructions[1]['mp3'];
