@@ -168,7 +168,7 @@
         $.each(actions||[], function(idx, action) {
             const attrs = {
                 href: url || buildUrl(id),
-                elementid: id,
+                elementid: id
             };
 
             if (action.actionId === 'view') {
@@ -186,7 +186,7 @@
      */
     var addGUIEntry = function($insertPoint, name, url, requestPage, actions) {
 
-        var id = encodeURIComponent(name)
+        var id = encodeURIComponent(name);
         var $header = $insertPoint.prev('.header');
         $header.attr('count', parseInt($header.attr('count')||0)+1);
 
