@@ -184,7 +184,7 @@
     /**
      * Add an entry to the accordion of the according type.
      */
-    var addGUIEntry = function($insertPoint, name, url, requestPage, actions) {
+    var addGUIEntry = function($insertPoint, name, url, requestPage, requestPageURL, actions) {
 
         var id = encodeURIComponent(name);
         var $header = $insertPoint.prev('.header');
@@ -203,7 +203,7 @@
         if ( requestPage && requestPage.length ) {
             var $pageId = $('<span>').text(requestPage);
             var $entry = $('<li>').addClass('requestPage').append($pageId).appendTo($appendTo);
-            guiElementActions(actions, requestPage, url, $entry);
+            guiElementActions(actions, requestPage, requestPageURL, $entry);
         }
     };
 
@@ -225,7 +225,7 @@
                 checkPoint[checkId].push(requestPage);
             }
 
-            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), name, url, requestPage, actions);
+            addGUIEntry($output.find('.multiorphan__result.' + (amount == 0 ? 'wanted' : 'linked')), name, url, requestPage, (response||{}).href, actions);
         };
 
         var $pagesOut = $orphanForm.find('.multiorphan__result_group.pages');
@@ -274,11 +274,11 @@
         if ( processCompleted == true ) {
             $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').html('');
             $.each($currentResults.pages.orphan, function(idx, orphan){
-                addGUIEntry($pagesOut, orphan, null, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
+                addGUIEntry($pagesOut, orphan, null, null, null, [ORPHANACTIONS.view('Page'), ORPHANACTIONS.delete('Page')]);
             });        
 
             $.each($currentResults.media.orphan, function(idx, orphan){
-                addGUIEntry($mediaOut, orphan, null, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
+                addGUIEntry($mediaOut, orphan, null, null, null, [ORPHANACTIONS.view('Media'), ORPHANACTIONS.delete('Media')]);
             });        
         } else {
             $orphanForm.find('.multiorphan__result_group .multiorphan__result.orphan').append($('<div/>').html(getLang('please-wait-orphan')));

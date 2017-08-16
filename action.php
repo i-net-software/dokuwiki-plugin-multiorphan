@@ -57,18 +57,18 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             return false;
         }
         $event->preventDefault();
-        
+
         $namespace = $INPUT->str('ns');
         $ns_dir  = utf8_encodeFN(str_replace(':','/',$namespace));
         $this->checkExternal = $INPUT->bool('checkExternal');
         $result  = array();
-    
+
         switch( $INPUT->str('do') ) {
-            
+
             case 'loadpages': {
-                
+
                 $type = 'both'; //$INPUT->str('type');
-                
+
                 if ( $type == 'both' || $type == 'pages') {
                     $pages = array();
                     search($pages,$conf['datadir'],'search_universal',array(
@@ -78,7 +78,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     ),$ns_dir);
                     array_walk($pages, array($this, '__map_ids'));
                 }
-        
+
                 if ( $type == 'both' || $type == 'media') {
                     $media = array();
                     search($media,$conf['mediadir'],'search_media',array(
@@ -86,50 +86,50 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     ),$ns_dir);
                     array_walk($media, array($this, '__map_ids'));
                 }
-                
+
                 $result = array(
                     'pages' => $pages, 
                     'media' => $media
                 );
-                
+
                 break;
             }
-            
+
             case 'checkpage': {
-                
+
                 $id = $INPUT->str('id');
                 $result = $this->__check_pages($id);
                 break;
             }
-            
+
             case 'deletePage' : {
-                
+
                 $link = urldecode($INPUT->str('link'));
                 saveWikiText($link, '', "Remove page via multiORPHANS");
                 break;
             }
 
             case 'viewMedia' : {
-                
+
                 $link = $INPUT->str('link');
                 ob_start();
                 tpl_mediaFileDetails($link, null);
                 $result = array( 'dialogContent' => ob_get_contents());
                 ob_end_clean();
-                
+
                 // If there is no content, this could be a link only
                 if ( !empty( $result['dialogContent'] ) ) {
                     break;
                 }
             }
-            
+
             case 'deleteMedia' : {
-                
+
                 $link = urldecode($INPUT->str('link'));
                 $status = media_delete($link, $AUTH);
                 break;
             }
-            
+
             default: {
                 $result = array(
                     'error' => 'I do not know what to do.'
@@ -137,34 +137,34 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 break;
             }
         }
-        
+
         print json_encode($result);
-    
+
     }
-    
+
     /**
      * Remove not needed information from search
      */
     private function __map_ids(&$element) {
         $element = $element['id'];
     }
-    
+
     /**
      * Checks a page for the contained links and media.
      * Returns an array: page|media => array of ids with count
      */
     private function __check_pages($id) {
-        
+
         global $conf;
-        
+
         $file         = wikiFN($id);
         $instructions = p_cached_instructions($file, false, $id);
-        $links        = array('pages' => [], 'media' => []);
+        $links        = array('pages' => [], 'media' => [], 'href' => wl($id) );
 
         $this->walk_instructions( $links, $id, $instructions );
         return $links;
     }
-    
+
     private function walk_instructions( &$links, $id, $instructions ) {
 
         if (!is_array($instructions)) {
@@ -187,7 +187,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 'syntax' => $ins[0],
                 'type' => $this->getInternalMediaType($ins[0]),
                 'exists' => null,
-                
+
             );
 
             $evt = new Doku_Event('MULTIORPHAN_INSTRUCTION_LINKED', $data);
@@ -211,7 +211,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                             'entryID' => $hash,
                             'exists' => null,
                         );
-                        
+
                         $this->_check_locallink( $linkData );
                         $data['exists'] = $linkData['exists'];
                     }
@@ -231,7 +231,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
 
         }
     }
-    
+
     private function _plugin_input_to_header( &$input, &$data ) {
 
         // print_r($input);
@@ -269,18 +269,18 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         if ( !is_null($instructions) ) {
             $result = array_filter($instructions, function( $input ) use ( $data, $renderer ) {
                 // Closure requires PHP >= 5.3
-    
+
                 if ( $input[0] == 'plugin' ) {
                     $this->_plugin_input_to_header( $input, $data );
                 }
-    
+
                 if ( $input[0] != 'header' ) {
                     return $data['exists'];
                 }
-    
+
                 $hid = $renderer->_headerToLink( $input[1][0] );
                 $check = $renderer->_headerToLink( $data['entryID'] );
-    
+
                 return ($hid == $check);
             });
         }
@@ -302,7 +302,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 $this->_check_locallink( $event->data );
             }
             case 'interwikilink': {
-                
+
                 if ( ! $this->checkExternal ) { return false; }
                 $this->_init_renderer();
                 $exists = false;
@@ -389,7 +389,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                     $this->_init_renderer();
                     $hash = '#' . $this->renderer->_headerToLink( $hash );
                 }
-                
+
                 return wl($link) . $hash;
             case 'urls':
                 return $id;
