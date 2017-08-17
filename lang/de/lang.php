@@ -31,6 +31,7 @@ $lang['wanted']                   = 'Benötigt';
 $lang['orphan']                   = 'Verwaist';
 $lang['linked']                   = 'Verlinkt';
 $lang['checkExternal']            = 'Externe URLs prüfen';
+$lang['includeHidden']            = 'Versteckte Seiten prüfen';
 $lang['js']['request-aborted']    = 'Anfrage abgebrochen';
 $lang['js']['start']              = 'Start';
 $lang['js']['stop']               = 'Stop';

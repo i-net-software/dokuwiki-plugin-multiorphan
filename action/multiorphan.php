@@ -59,6 +59,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
         $event->preventDefault();
 
         $namespace = $INPUT->str('ns');
+        $includeHidden = $INPUT->bool('hidden', false);
         $ns_dir  = utf8_encodeFN(str_replace(':','/',$namespace));
         $this->checkExternal = $INPUT->bool('checkExternal');
         $result  = array();
@@ -72,6 +73,8 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 if ( $type == 'both' || $type == 'pages') {
                     $pages = array();
                     search($pages,$conf['datadir'],'search_universal',array(
+                        'showhidden' => $includeHidden,
+                        'skipacl' => $includeHidden,
                         'pagesonly' => true,
                         'listfiles' => true,
                         'idmatch' => trim($INPUT->str('filter'))
@@ -82,6 +85,8 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 if ( $type == 'both' || $type == 'media') {
                     $media = array();
                     search($media,$conf['mediadir'],'search_media',array(
+                        'showhidden' => $includeHidden,
+                        'skipacl' => $includeHidden,
                         'pattern' => '/' . str_replace('/', '\/', trim($INPUT->str('filter'))) . '/'
                     ),$ns_dir);
                     array_walk($media, array($this, '__map_ids'));

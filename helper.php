@@ -55,6 +55,9 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->addElement(form_makeCheckboxField('purge', 1, $this->getLang('purge') . ':', 'purge'));
         $form->addElement(form_makeTag('br'));
 */
+        $form->addElement(form_makeCheckboxField('includeHidden', 1, $this->getLang('includeHidden') . ':', 'includeHidden'));
+        $form->addElement(form_makeTag('br'));
+        
         $form->addElement(form_makeCheckboxField('checkExternal', 1, $this->getLang('checkExternal') . '<span style="color:#00f">*</span>:', 'checkExternal'));
         $form->addElement(form_makeTag('br'));
         

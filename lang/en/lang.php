@@ -37,6 +37,7 @@ $lang['wanted'] = 'Wanted';
 $lang['orphan'] = 'Orphaned';
 $lang['linked'] = 'Linked';
 $lang['checkExternal'] = 'Check external URLs';
+$lang['includeHidden'] = 'Include hidden pages';
 $lang['checkExternalHint'] = 'Implies a performance hit due to checking external pages for HTTP status "200 OK".';
 
 

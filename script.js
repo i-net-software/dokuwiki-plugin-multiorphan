@@ -303,6 +303,10 @@
             data['checkExternal'] = true
         }
 
+        if ( $orphanForm.find('input[name=includeHidden]').is(':checked') ) {
+            data['includeHidden'] = true
+        }
+
         // data['type']   = $orphanForm.find('select[name=type]').val() || 'both';
         data['call']   = 'multiorphan';
 
