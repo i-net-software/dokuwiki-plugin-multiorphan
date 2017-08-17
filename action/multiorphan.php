@@ -58,7 +58,6 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
         $event->preventDefault();
 
         $namespace = $INPUT->str('ns');
-        $includeHidden = $INPUT->bool('hidden', false);
         $ns_dir  = utf8_encodeFN(str_replace(':','/',$namespace));
         $this->checkExternal = $INPUT->bool('checkExternal');
         $result  = array();
@@ -68,6 +67,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
             case 'loadpages': {
 
                 $type = 'both'; //$INPUT->str('type');
+                $includeHidden = $INPUT->bool('includeHidden', false);
 
                 if ( $type == 'both' || $type == 'pages') {
                     $pages = array();
