@@ -11,7 +11,7 @@ if(!defined('DOKU_INC')) {
     die();
 }
 
-class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
+class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
 
     private $checkInstructions = array('plugin', 'externallink', 'interwikilink', 'locallink', 'windowssharelink');
     private $pagesInstructions = array('internallink', 'camelcaselink');
@@ -165,7 +165,10 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
         return $links;
     }
 
-    private function walk_instructions( &$links, $id, $instructions ) {
+    /**
+     * Walks a list of instructions to find links
+     */
+    public function walk_instructions( &$links, $id, $instructions ) {
 
         if (!is_array($instructions)) {
             return;
@@ -187,55 +190,67 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
                 'syntax' => $ins[0],
                 'type' => $this->getInternalMediaType($ins[0]),
                 'exists' => null,
-
+                'additionalEntries' => array(),
+                'multiorphan' => $this
             );
 
             $evt = new Doku_Event('MULTIORPHAN_INSTRUCTION_LINKED', $data);
 
             // If prevented, this is definitely an orphan.
             if (!is_null($data['type']) || (in_array($ins[0], $this->checkInstructions) && $evt->advise_before())) {
-
-                if (is_null($data['type'])) {
-                    // still not media type so ignore the entry.
-                    continue;
-                }
-
-                $mid = $data['entryID'];
-                $hash = null;
-                if (strpos($mid, '#') !== false) {
-                    list($mid, $hash) = explode('#', $mid); //record pages without hashs
-                }
-                //list($mid) = explode('?', $mid); //record pages without question mark
-                if (!is_bool($data['exists']) && $data['type'] == 'media') {
-                    resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
-                } else if (!is_bool($data['exists'])) {
-                    resolve_pageid($data['checkNamespace'], $mid, $data['exists']);
-                    if ( $data['exists'] && !empty( $hash) ) {
-                        // check for 'locallink' in a different page than the current one
-                        $linkData = array(
-                            'pageID' => $mid,
-                            'entryID' => $hash,
-                            'exists' => null,
-                        );
-
-                        $this->_check_locallink( $linkData );
-                        $data['exists'] = $linkData['exists'];
-                    }
-                }
-
-                $itemIndex = $mid . (!empty($hash) ? '#'.$hash : '');
-                if (!isset($links[$data['type']][$itemIndex])) {
-                    $links[$data['type']][$itemIndex] = array(
-                        'href' => $this->hrefForType( $data['type'], $itemIndex),
-                        'amount' => 0
-                    );
-                }
-
-                $links[$data['type']][$itemIndex]['amount'] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
+                $this->_addEntryToLinkList( $links, $data);
             }
 
             unset($evt);
+        }
+    }
 
+    private function _addEntryToLinkList( &$links, $data ) {
+
+        if ( !$data || is_null($data['type'])) {
+            // still not media type so ignore the entry.
+            return;
+        }
+
+        $mid = $data['entryID'];
+        $hash = null;
+        if (strpos($mid, '#') !== false) {
+            list($mid, $hash) = explode('#', $mid); //record pages without hashs
+        }
+        //list($mid) = explode('?', $mid); //record pages without question mark
+        if (!is_bool($data['exists']) && $data['type'] == 'media') {
+            resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
+        } else if (!is_bool($data['exists'])) {
+            resolve_pageid($data['checkNamespace'], $mid, $data['exists']);
+            if ( $data['exists'] && !empty( $hash) ) {
+                // check for 'locallink' in a different page than the current one
+                $linkData = array(
+                    'pageID' => $mid,
+                    'entryID' => $hash,
+                    'exists' => null,
+                );
+
+                $this->_check_locallink( $linkData );
+                $data['exists'] = $linkData['exists'];
+            }
+        }
+
+        $itemIndex = $mid . (!empty($hash) ? '#'.$hash : '');
+        if (!isset($links[$data['type']][$itemIndex])) {
+            $links[$data['type']][$itemIndex] = array(
+                'href' => $this->hrefForType( $data['type'], $itemIndex),
+                'amount' => 0
+            );
+        }
+
+        $links[$data['type']][$itemIndex]['amount'] += (is_bool($data['exists']) && $data['exists']) ? 1 : 0;
+
+        if ( !is_array($data['additionalEntries']) ) {
+            return;
+        } 
+
+        foreach( $data['additionalEntries'] as $additionalEntry ) {
+            $this->_addEntryToLinkList( $links, $additionalEntry);
         }
     }
 
@@ -391,7 +406,7 @@ class action_plugin_multiorphan extends DokuWiki_Action_Plugin {
             return;
         }
 
-        @include_once( dirname( __FILE__ ) .  "/inc/MultiOrphanDummyRenderer.php");
+        @include_once( dirname( __FILE__ ) .  "/../inc/MultiOrphanDummyRenderer.php");
         $this->renderer = new MultiOrphanDummyRenderer();
         $this->renderer->interwiki = getInterwiki();
     }
