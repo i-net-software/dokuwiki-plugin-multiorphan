@@ -11,7 +11,7 @@ if(!defined('DOKU_INC')) {
     die();
 }
 
-class action_plugin_multiorphan_dir extends DokuWiki_Action_Plugin {
+class action_plugin_multiorphan_pluginDir extends DokuWiki_Action_Plugin {
 
     var $plugin_dir;
 
@@ -46,10 +46,10 @@ class action_plugin_multiorphan_dir extends DokuWiki_Action_Plugin {
 
         $event->data['type'] = 'plugin';
         foreach( $this->plugin_dir->pages as $page ) {
-            $event->data['additionalEntries'][] = array_merge($event->data, array (
+            $event->data['additionalEntries'][] = array (
                 'type' => 'pages',
                 'entryID' => $page['id']
-            ));
+            );
         }
 
         return true;

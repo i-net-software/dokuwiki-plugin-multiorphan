@@ -174,7 +174,6 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
             return;
         }
 
-        $cns = getNS($id);
         foreach ($instructions as $ins) {
 
             if ($ins[0] == 'nest' ) {
@@ -182,18 +181,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 continue;
             }
 
-            $data = array(
-                'pageID' => $id,
-                'instructions' => $ins[1],
-                'checkNamespace' => $cns,
-                'entryID' => !empty($ins[1][0]) ? $ins[1][0] : null,
-                'syntax' => $ins[0],
-                'type' => $this->getInternalMediaType($ins[0]),
-                'exists' => null,
-                'additionalEntries' => array(),
-                'multiorphan' => $this
-            );
-
+            $data = $this->_getDataContainer( $id, $ins);
             $evt = new Doku_Event('MULTIORPHAN_INSTRUCTION_LINKED', $data);
 
             // If prevented, this is definitely an orphan.
@@ -203,6 +191,20 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
 
             unset($evt);
         }
+    }
+
+    private function _getDataContainer( $id, $instructions ) {
+
+        return array(
+                    'pageID' => $id,
+                    'instructions' => $instructions[1],
+                    'checkNamespace' => getNS($id),
+                    'entryID' => !empty($instructions[1][0]) ? $instructions[1][0] : null,
+                    'syntax' => $instructions[0],
+                    'type' => $this->getInternalMediaType($instructions[0]),
+                    'exists' => null,
+                    'additionalEntries' => array(),
+                );
     }
 
     private function _addEntryToLinkList( &$links, $data ) {
@@ -217,7 +219,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
         if (strpos($mid, '#') !== false) {
             list($mid, $hash) = explode('#', $mid); //record pages without hashs
         }
-        //list($mid) = explode('?', $mid); //record pages without question mark
+
         if (!is_bool($data['exists']) && $data['type'] == 'media') {
             resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
         } else if (!is_bool($data['exists'])) {
@@ -250,7 +252,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
         } 
 
         foreach( $data['additionalEntries'] as $additionalEntry ) {
-            $this->_addEntryToLinkList( $links, $additionalEntry);
+            $this->_addEntryToLinkList( $links, array_merge( $this->_getDataContainer( $data['id'], $data['instructions']), $additionalEntry));
         }
     }
 
