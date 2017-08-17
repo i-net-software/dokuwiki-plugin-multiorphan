@@ -17,7 +17,6 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
     private $pagesInstructions = array('internallink', 'camelcaselink');
     private $mediaInstructions = array('internalmedia');
 
-    private $httpClient = null;
     private $renderer = null;
     private $checkExternal = false;
 
@@ -340,18 +339,21 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 $this->_init_renderer();
                 $exists = false;
                 $event->data['entryID'] = $this->renderer->_resolveInterWiki($instructions[2], $instructions[3], $exists);
-
-                $this->_init_http_client();
-                $data = $this->httpClient->get( $instructions[0] );
-                $event->data['exists'] = $data->status == 200;
             }
             case 'externallink': {
 
                 if ( ! $this->checkExternal ) { return false; }
-                $this->_init_http_client();
-                $data = $this->httpClient->get( $event->data['entryID'] );
-                $event->data['exists'] = $this->httpClient->status == 200;
+
+                @include_once( DOKU_INC . '/HTTPClient.php');
+                $httpClient = new DokuHTTPClient();
+                $data = $httpClient->sendRequest( $event->data['entryID'], null, 'HEAD' );
+                $event->data['exists'] = ( $httpClient->status >= 200 && $httpClient->status <= 200 ) || $httpClient->status == 304;
+                $event->data['status'] = $httpClient->status;
                 $event->data['type'] = 'urls';
+                if ( !empty( $httpClient->error ) ) {
+                    print $httpClient->error;
+                }
+
                 return true;
             }
             case 'windowssharelink': {
@@ -401,15 +403,6 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
     public function extend_JSINFO($event, $param) {
         global $JSINFO;
         $JSINFO['schemes'] = array_values(getSchemes());
-    }
-
-    private function _init_http_client() {
-        if ( $this->httpClient != null ) {
-            return;
-        }
-
-        @include_once( DOKU_INC . '/HTTPClient.php');
-        $this->httpClient = new DokuHTTPClient();
     }
 
     private function _init_renderer() {
