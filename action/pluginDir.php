@@ -40,7 +40,11 @@ class action_plugin_multiorphan_pluginDir extends DokuWiki_Action_Plugin {
         if ( $event->data['syntax'] != 'plugin' || $instructions[0] != 'dir' || !$this->plugin_dir ) { return false; }
 
         $data = $this->plugin_dir->handle($instructions[1], null, null, new Doku_Handler());
+        $this->plugin_dir->_initRender('xhtml', new Doku_Renderer_xhtml());
+        
+        $this->plugin_dir->debug = true;
         if ( !$this->plugin_dir->_parseOptions($data) ) {
+            print $this->plugin_dir->rdr->doc;
             return false;
         }
 
