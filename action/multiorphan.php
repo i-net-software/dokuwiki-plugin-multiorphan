@@ -169,11 +169,14 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
      * Walks a list of instructions to find links
      */
     public function walk_instructions( &$links, $id, $instructions ) {
+        global $ID;
 
         if (!is_array($instructions)) {
             return;
         }
 
+        $internalID = $ID;
+        $ID = $id;
         foreach ($instructions as $ins) {
 
             if ($ins[0] == 'nest' ) {
@@ -191,6 +194,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
 
             unset($evt);
         }
+        $ID = $internalID;
     }
 
     private function _getDataContainer( $id, $instructions ) {
