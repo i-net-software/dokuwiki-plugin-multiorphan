@@ -37,7 +37,7 @@ class action_plugin_multiorphan_pluginBlog extends DokuWiki_Action_Plugin {
     public function handle_unknown_instructions(Doku_Event &$event) {
 
         $instructions = $event->data['instructions'];
-        if ( $event->data['syntax'] != 'plugin' || $instructions[0] != 'blog_blog' || !$this->plugin_blog ) { return false; }
+        if ( $event->data['syntax'] != 'plugin' || !in_array( $instructions[0], array( 'blog_blog', 'blog_archive', 'blog_autoarchive') ) || !$this->plugin_blog ) { return false; }
 
         $event->data['type'] = 'plugin';
 
