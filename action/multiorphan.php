@@ -351,7 +351,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 $event->data['status'] = $httpClient->status;
                 $event->data['type'] = 'urls';
                 if ( !empty( $httpClient->error ) ) {
-                    print $httpClient->error;
+                    $event->data['error'] = $httpClient->error;
                 }
 
                 return true;
