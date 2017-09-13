@@ -347,7 +347,8 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 @include_once( DOKU_INC . '/HTTPClient.php');
                 $httpClient = new DokuHTTPClient();
                 $httpClient->keep_alive = false; // just close it already.
-                $data = $httpClient->sendRequest( $event->data['entryID'], null, 'HEAD' );
+                $httpClient->max_bodysize = 0;
+                $data = $httpClient->sendRequest( $event->data['entryID'], null, 'GET' );
                 $event->data['exists'] = ( $httpClient->status >= 200 && $httpClient->status <= 200 ) || $httpClient->status == 304;
                 $event->data['status'] = $httpClient->status;
                 $event->data['type'] = 'urls';
