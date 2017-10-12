@@ -1,3 +1,3 @@
 ====== multiORPHAN Checker ======
 
-Überprüft verwaiste und gesuchte Seiten und Media-Dateien.
+Durchsucht das Wiki nach verwaisten oder benötigten Seiten und Media-Dateien.
