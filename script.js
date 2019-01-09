@@ -303,6 +303,10 @@
             data['checkExternal'] = true
         }
 
+        if ( $orphanForm.find('input[name=includeWindowsShares]').is(':checked') ) {
+            data['includeWindowsShares'] = true
+        }
+
         if ( $orphanForm.find('input[name=includeHidden]').is(':checked') ) {
             data['includeHidden'] = true
         }
