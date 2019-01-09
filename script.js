@@ -41,7 +41,7 @@
                 label: 'Delete',
                 click: function() {
                     var $link = $(this);
-                    request({'do':'delete'+type , 'link':$link.attr('elementid')}, function(response){
+                    request({'do':'delete'+type , 'link':decodeURIComponent($link.attr('elementid'))}, function(response){
                         $link.parents('.entry[elementid="'+$link.attr('elementid')+'"]').addClass('deleted disabled');
                         $link.parent('.actions').remove();
                     });
