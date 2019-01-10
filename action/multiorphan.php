@@ -19,6 +19,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
 
     private $renderer = null;
     private $checkExternal = false;
+    private $includeWindowsShares = false;
 
     /**
      * Registers a callback function for a given event
@@ -60,6 +61,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
         $namespace = $INPUT->str('ns');
         $ns_dir  = utf8_encodeFN(str_replace(':','/',$namespace));
         $this->checkExternal = $INPUT->bool('checkExternal');
+        $this->includeWindowsShares = $INPUT->bool('includeWindowsShares');
         $result  = array();
 
         switch( $INPUT->str('do') ) {
@@ -359,6 +361,8 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 return true;
             }
             case 'windowssharelink': {
+                if ( ! $this->includeWindowsShares ) { return false; }
+                
                 if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
                     return false;
                 }

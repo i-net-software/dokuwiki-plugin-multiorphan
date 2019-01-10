@@ -38,7 +38,9 @@ $lang['orphan'] = 'Orphaned';
 $lang['linked'] = 'Linked';
 $lang['checkExternal'] = 'Check external URLs';
 $lang['includeHidden'] = 'Include hidden pages';
+$lang['includeWindowsShares']  = 'Include Windows Share Links';
 $lang['checkExternalHint'] = 'Implies a performance hit due to checking external pages for HTTP status "200 OK".';
+$lang['includeWindowsSharesHint'] = 'By default links to Windows Shares are not considered. False-positives might occur while checking these links in consequence of misconfigured <a href="https://secure.php.net/manual/de/function.file-exists.php#76194" target="_blank">share- or NTFS-permissions</a>!';
 
 
 

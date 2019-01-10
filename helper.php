@@ -61,19 +61,25 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->addElement(form_makeCheckboxField('checkExternal', 1, $this->getLang('checkExternal') . '<span style="color:#00f">*</span>:', 'checkExternal'));
         $form->addElement(form_makeTag('br'));
         
+        $form->addElement(form_makeCheckboxField('includeWindowsShares', 1, $this->getLang('includeWindowsShares') . '<span style="color:#00f">**</span>:', 'includeWindowsShares'));
+        $form->addElement(form_makeTag('br'));
+        
         $form->addElement(form_makeButton('submit', 'multiorphan', $this->getLang('start') , array('style' => 'float:right;')));
 
         $form->addElement(form_makeTag('br'));
         $form->addElement(form_makeOpenTag('sub'));
         $form->addElement('<span style="color:#00f">*</span> ');
         $form->addElement($this->getLang('checkExternalHint'));
+        $form->addElement(form_makeTag('br'));
+        $form->addElement('<span style="color:#00f">**</span> ');
+        $form->addElement($this->getLang('includeWindowsSharesHint'));
         $form->addElement(form_makeCloseTag('sub'));
         $form->endFieldset();
 
         $form->startFieldset( $this->getLang('status') );
         $form->addElement(form_makeTag('div', array('id' => 'multiorphan__out')));
         $form->addElement(form_makeOpenTag('span', array('class' => 'multiorphan__throbber')));
-        $form->addElement(form_makeTag('img', array('src' => DOKU_BASE.'lib/images/loading.gif', 'id' => 'multiorphan__throbber')));
+        $form->addElement(form_makeTag('img', array('src' => DOKU_BASE.'lib/images/throbber.gif', 'id' => 'multiorphan__throbber')));
         $form->addElement(form_makeCloseTag('span'));
         $form->addElement(form_makeCloseTag('div'));
         $form->endFieldset();
