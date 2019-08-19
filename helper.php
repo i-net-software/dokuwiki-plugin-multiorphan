@@ -64,6 +64,9 @@ class helper_plugin_multiorphan extends DokuWiki_Plugin {
         $form->addElement(form_makeCheckboxField('includeWindowsShares', 1, $this->getLang('includeWindowsShares') . '<span style="color:#00f">**</span>:', 'includeWindowsShares'));
         $form->addElement(form_makeTag('br'));
         
+        $form->addElement(form_makeTextField('throttle', 0, $this->getLang('throttle') . ':', 'throttle'));
+        $form->addElement(form_makeTag('br'));
+
         $form->addElement(form_makeButton('submit', 'multiorphan', $this->getLang('start') , array('style' => 'float:right;')));
 
         $form->addElement(form_makeTag('br'));

@@ -44,3 +44,5 @@ $lang['js']['checking-page']   = 'Überprüfe Seite';
 $lang['js']['checking-orphans'] = 'Suche nach verwaisten Dateien.';
 $lang['js']['error-parsing']   = 'Fehler Antwort Syntaxanalyse:';
 $lang['js']['please-wait-orphan'] = 'Bitte warten Sie bis der Prozess beendet wurde.';
+$lang['throttle']        = 'Wartezeit zwischen den Anfragen in Sekunden';
+$lang['js']['throttled']        = 'verzögert';

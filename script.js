@@ -82,6 +82,7 @@
 
             canBeStopped = false;
             $currentPagesAndMedia.stop = true;
+			$orphanForm.find('button[type=submit]').text(getLang('start'));
             errorLog(getLang('request-aborted'));
             return false;
         }
@@ -117,6 +118,8 @@
      */
     var checkpagesandmedia = function(elements) {
 
+		var throttleValue = 0;
+
         // Cycle pages. Media is implicite.
         var validateElement = function(result) {
 
@@ -124,15 +127,18 @@
             if ( elements && elements.length && !($currentPagesAndMedia && $currentPagesAndMedia.stop) ) {
                 var element = elements.pop();
 
-                status(getLang('checking-page') + "("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+" " + getTimeDifference() + "):<br/>" + element);
-                request({'do':'checkpage','id':element}, function(response) {
-                    checkResponseForWantedAndLinked(response, element);
+                status(getLang('checking-page') + " ("+($currentPagesAndMedia.pages.length-elements.length)+"/"+($currentPagesAndMedia.pages.length)+" " + getTimeDifference() + ")" + (throttleValue > 0 ? ' <i>' + getLang('throttled') + '</i>' : '') + ":<br/>" + element);
 
-                    // Every 10 pages
-                    //if ( elements && elements.length && elements.length % $currentPagesAndMedia.interval == 0 ) {
-                        findOrphans();
-                    //}
-                }).always(validateElement);
+				window.setTimeout(function() {
+	                request({'do':'checkpage','id':element}, function(response) {
+	                    checkResponseForWantedAndLinked(response, element);
+	
+	                    // Every 10 pages
+	                    //if ( elements && elements.length && elements.length % $currentPagesAndMedia.interval == 0 ) {
+	                        findOrphans();
+	                    //}
+	                }).always(validateElement);
+				}, Math.max(0, throttleValue) * 1000 );
             } else {
 
                 // All done. Check for Orphans.                
@@ -145,6 +151,7 @@
         };
 
         validateElement();
+        throttleValue = parseInt( $orphanForm.find('input[name=throttle]').val() );
     };
 
     var buildUrl = function (id) {
