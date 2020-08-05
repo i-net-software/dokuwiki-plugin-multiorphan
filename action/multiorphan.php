@@ -230,9 +230,16 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
             list($mid, $hash) = explode('#', $mid); //record pages without hashs
         }
 
-        if (!is_bool($data['exists']) && $data['type'] == 'media') {
+		$isLocalLink = $data['syntax'] == 'locallink';
+		if ( $isLocalLink ) {
+	        $mid = $data['pageID'];
+	        $hash = cleanID($data['instructions'][0]);
+	        $data['type'] = 'pages';
+		}
+
+        if (( !is_bool($data['exists']) || !$data['exists']) && $data['type'] == 'media') {
             resolve_mediaid($data['checkNamespace'], $mid, $data['exists']);
-        } else if (!is_bool($data['exists'])) {
+        } else if (!is_bool($data['exists']) || !$data['exists']) {
             resolve_pageid($data['checkNamespace'], $mid, $data['exists']);
             if ( $data['exists'] && !empty( $hash) ) {
                 // check for 'locallink' in a different page than the current one
