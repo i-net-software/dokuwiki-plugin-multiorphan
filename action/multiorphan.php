@@ -333,9 +333,10 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
      * Handles unknown instructions using the Event.
      */
     public function handle_unknown_instructions(Doku_Event &$event) {
-
-        //print "Beginn:\n";
-        //print_r($event->data);
+/*
+        print "Beginn:\n";
+        print_r($event->data);
+//*/
         $instructions = $event->data['instructions'];
         switch( $event->data['syntax'] ) {
 
