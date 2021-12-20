@@ -333,10 +333,9 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
      * Handles unknown instructions using the Event.
      */
     public function handle_unknown_instructions(Doku_Event &$event) {
-/*
-        print "Beginn:\n";
-        print_r($event->data);
-//*/
+
+        //print "Beginn:\n";
+        //print_r($event->data);
         $instructions = $event->data['instructions'];
         switch( $event->data['syntax'] ) {
 
@@ -354,8 +353,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
 
                 if ( ! $this->checkExternal ) { return false; }
 
-                @include_once( DOKU_INC . '/HTTPClient.php');
-                $httpClient = new DokuHTTPClient();
+                $httpClient = new dokuwiki\HTTP\DokuHTTPClient();
                 $httpClient->keep_alive = false; // just close it already.
                 $httpClient->max_bodysize = 0;
                 $data = $httpClient->sendRequest( $event->data['entryID'], null, 'GET' );
