@@ -227,7 +227,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
         $mid = $data['entryID'];
         $hash = null;
         if (strpos($mid, '#') !== false) {
-            list($mid, $hash) = sexplode('#', $mid); //record pages without hashs
+            list($mid, $hash) = sexplode('#', $mid, 2); //record pages without hashs
         }
 
 		$isLocalLink = $data['syntax'] == 'locallink';
