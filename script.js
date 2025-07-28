@@ -368,7 +368,7 @@
             return;
         }
 
-        if (!$('#multiorphan__errorlog').size()) {
+        if (!$('#multiorphan__errorlog').length) {
             $('#multiorphan__out').parent().append($('<div id="multiorphan__errorlog"/>'));
         }
 
