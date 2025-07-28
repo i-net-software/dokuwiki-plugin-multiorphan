@@ -316,8 +316,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                 }
 
                 if ( $input[0] == 'internallink' ) {
-                    $info = array();
-                    $output = p_render('xhtml', $instructions, $info);
+                    $output = p_cached_output(wikiFN($data['pageID']));
                     return strpos($output, 'id="'.strtolower($data['entryID']).'"');
                 }
 
