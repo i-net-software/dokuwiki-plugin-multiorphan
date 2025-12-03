@@ -227,7 +227,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
         $mid = $data['entryID'];
         $hash = null;
         if (strpos($mid, '#') !== false) {
-            list($mid, $hash) = explode('#', $mid); //record pages without hashs
+            list($mid, $hash) = sexplode('#', $mid, 2); //record pages without hashs
         }
 
 		$isLocalLink = $data['syntax'] == 'locallink';
@@ -434,7 +434,7 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
     private function hrefForType( $type, $id ) {
         switch( $type ) {
             case 'pages':
-                list($link, $hash) = explode('#', $id, 2);
+                list($link, $hash) = sexplode('#', $id, 2);
                 if ( !empty( $hash) ) {
                     $this->_init_renderer();
                     $hash = '#' . $this->renderer->_headerToLink( $hash );
