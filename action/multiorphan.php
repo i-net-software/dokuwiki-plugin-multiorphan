@@ -315,6 +315,11 @@ class action_plugin_multiorphan_multiorphan extends DokuWiki_Action_Plugin {
                     $this->_plugin_input_to_header( $input, $data );
                 }
 
+                if ( $input[0] == 'internallink' ) {
+                    $output = p_cached_output(wikiFN($data['pageID']));
+                    return strpos($output, 'id="'.strtolower($data['entryID']).'"');
+                }
+
                 if ( $input[0] != 'header' ) {
                     return $data['exists'];
                 }
