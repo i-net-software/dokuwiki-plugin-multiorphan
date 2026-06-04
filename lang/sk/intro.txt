@@ -1,0 +1,3 @@
+====== multiORPHAN Checker ======
+
+Kontroluje osirotené a chcené stránky a mediálne súbory.
